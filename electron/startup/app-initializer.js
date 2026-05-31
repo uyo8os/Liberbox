@@ -124,14 +124,55 @@ async function initializeApp(deps) {
 
   // ---- 4. 加载外观设置（必须在创建窗口之前） ----
   try {
-    const storedAppearance = dbManager.getSetting("appearanceMode", "dynamic");
+    // 首先检测系统是否支持高级背景效果
+    const supportsAdvanced = (() => {
+      if (process.platform === 'darwin') return true;
+      if (process.platform === 'linux') return false;
+      if (process.platform === 'win32') {
+        try {
+          const os = require('os');
+          const release = os.release();
+          const parts = release.split('.');
+          const major = parseInt(parts[0], 10);
+          const build = parseInt(parts[2], 10);
+          if (major === 10 && build >= 22000) return true;
+          if (major > 10) return true;
+          return false;
+        } catch (error) {
+          console.error('检测 Windows 版本失败:', error);
+          return false;
+        }
+      }
+      return false;
+    })();
+
+    console.log('[Startup] 系统支持高级背景效果:', supportsAdvanced);
+
+    // 根据系统支持情况确定默认外观模式
+    const defaultMode = supportsAdvanced ? 'dynamic' : 'solid';
+    
+    // 从数据库加载外观设置，如果不存在则使用默认值
+    const storedAppearance = dbManager.getSetting("appearanceMode", null);
+    
     if (storedAppearance) {
-      state.appearanceMode = storedAppearance;
-      console.log("已加载外观设置:", storedAppearance);
+      // 如果系统不支持高级背景，但保存的是 dynamic 或 acrylic，则改为 solid
+      if (!supportsAdvanced && (storedAppearance === 'dynamic' || storedAppearance === 'acrylic')) {
+        console.log('[Startup] 系统不支持高级背景，将外观模式从', storedAppearance, '改为 solid');
+        state.appearanceMode = 'solid';
+        dbManager.setSetting('appearanceMode', 'solid');
+      } else {
+        state.appearanceMode = storedAppearance;
+      }
+      console.log("已加载外观设置:", state.appearanceMode);
+    } else {
+      // 首次启动，使用默认值并保存到数据库
+      state.appearanceMode = defaultMode;
+      dbManager.setSetting('appearanceMode', defaultMode);
+      console.log("首次启动，使用默认外观设置:", defaultMode);
     }
   } catch (error) {
     console.warn("读取外观设置失败，将使用默认值:", error?.message || error);
-    state.appearanceMode = "dynamic";
+    state.appearanceMode = "solid"; // 出错时使用最安全的模式
   }
 
   // ---- 5. 创建窗口 ----

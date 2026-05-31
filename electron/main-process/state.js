@@ -40,6 +40,6 @@ module.exports = {
   memoryMonitorInterval: null,
   logsWebSocket: null,
   logsRetry: 10,
-  appearanceMode: 'acrylic',
+  appearanceMode: 'solid', // 默认使用最安全的模式，实际值会在启动时根据系统能力设置
   trafficAccumulator: null
 };

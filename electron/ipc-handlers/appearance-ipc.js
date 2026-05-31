@@ -53,7 +53,7 @@ function registerAppearanceIpcHandlers(deps) {
   // --- Appearance mode -------------------------------------------------
 
   ipcMain.handle('get-appearance-mode', () => {
-    return { success: true, mode: state.appearanceMode || 'acrylic' };
+    return { success: true, mode: state.appearanceMode || 'solid' };
   });
 
   ipcMain.handle('set-appearance-mode', (event, mode) => {
