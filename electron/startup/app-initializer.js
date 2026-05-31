@@ -121,14 +121,27 @@ async function initializeApp(deps) {
       console.log("启动参数中未找到协议URL");
     }
   }
-  // ---- 4. 创建窗口 ----
+
+  // ---- 4. 加载外观设置（必须在创建窗口之前） ----
+  try {
+    const storedAppearance = dbManager.getSetting("appearanceMode", "dynamic");
+    if (storedAppearance) {
+      state.appearanceMode = storedAppearance;
+      console.log("已加载外观设置:", storedAppearance);
+    }
+  } catch (error) {
+    console.warn("读取外观设置失败，将使用默认值:", error?.message || error);
+    state.appearanceMode = "dynamic";
+  }
+
+  // ---- 5. 创建窗口 ----
   createWindow();
 
   app.on("activate", function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 
-  // ---- 5. 加载主题设置 ----
+  // ---- 6. 加载主题设置 ----
   try {
     const theme = dbManager.getSetting("theme", "system");
     nativeTheme.themeSource = theme;
@@ -137,10 +150,10 @@ async function initializeApp(deps) {
     console.error("加载主题设置失败:", error);
   }
 
-  // ---- 6. 确保用户设置文件存在 ----
+  // ---- 7. 确保用户设置文件存在 ----
   ensureUserSettingsFile();
 
-  // ---- 7. 确保 mihomo 数据文件存在 ----
+  // ---- 8. 确保 mihomo 数据文件存在 ----
   ensureMihomoDataFiles()
     .then(() => {
       console.log("mihomo数据文件初始化完成");
@@ -149,7 +162,7 @@ async function initializeApp(deps) {
       console.error("mihomo数据文件初始化失败:", error);
     });
 
-  // ---- 8. 加载上次使用的配置 ----
+  // ---- 9. 加载上次使用的配置 ----
   try {
     const lastConfigPath = path.join(userDataPath, "last-config.json");
     if (fs.existsSync(lastConfigPath)) {
@@ -165,7 +178,7 @@ async function initializeApp(deps) {
     console.error("加载上次使用的配置失败:", error);
   }
 
-  // ---- 9. 检查系统代理状态 ----
+  // ---- 10. 检查系统代理状态 ----
   try {
     if (process.platform === "win32") {
       const result = execSync(
@@ -188,16 +201,6 @@ async function initializeApp(deps) {
     }
   } catch (error) {
     console.error("检查系统代理状态失败:", error);
-  }
-  // ---- 10. 读取外观设置 ----
-  try {
-    const storedAppearance = dbManager.getSetting("appearanceMode", "dynamic");
-    if (storedAppearance) {
-      state.appearanceMode = storedAppearance;
-    }
-  } catch (error) {
-    console.warn("读取外观设置失败，将使用默认值:", error?.message || error);
-    state.appearanceMode = "dynamic";
   }
 
   // ---- 11. 检查 TUN 模式状态 ----

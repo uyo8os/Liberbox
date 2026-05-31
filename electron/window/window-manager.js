@@ -126,8 +126,11 @@ function createWindowManager(deps) {
       }
     };
 
-    // Apply platform-specific backdrop effects
-    if (isMac) {
+    // Apply platform-specific backdrop effects based on appearance mode
+    if (state.appearanceMode === 'custom') {
+      // 自定义背景会在 dom-ready 或 did-finish-load 时应用
+      console.log('[Window] Custom background mode detected, will apply after page load');
+    } else if (isMac) {
       applyMacOSBackdrop(state.mainWindow);
     } else if (isWindows) {
       refreshWindowsBackdrop(state.mainWindow, 0);
@@ -135,19 +138,22 @@ function createWindowManager(deps) {
 
     // Listen for system theme changes
     nativeTheme.on('updated', () => {
-      if (isMac) {
-        applyMacOSBackdrop(state.mainWindow);
-      }
+      // 自定义背景模式不需要响应系统主题变化
+      if (state.appearanceMode !== 'custom') {
+        if (isMac) {
+          applyMacOSBackdrop(state.mainWindow);
+        }
 
-      if (isWindows) {
-        refreshWindowsBackdrop(state.mainWindow, 0);
-        try {
-          const rgba = (alpha, r, g, b) =>
-            ((alpha & 0xff) << 24) | ((b & 0xff) << 16) | ((g & 0xff) << 8) | (r & 0xff);
-          const isDark = nativeTheme.shouldUseDarkColors;
-          const tint = isDark ? rgba(0xdc, 24, 32, 68) : rgba(0x66, 255, 255, 255);
-          enableAcrylic(state.mainWindow, { tintColor: tint, accentFlags: 2 });
-        } catch {}
+        if (isWindows) {
+          refreshWindowsBackdrop(state.mainWindow, 0);
+          try {
+            const rgba = (alpha, r, g, b) =>
+              ((alpha & 0xff) << 24) | ((b & 0xff) << 16) | ((g & 0xff) << 8) | (r & 0xff);
+            const isDark = nativeTheme.shouldUseDarkColors;
+            const tint = isDark ? rgba(0xdc, 24, 32, 68) : rgba(0x66, 255, 255, 255);
+            enableAcrylic(state.mainWindow, { tintColor: tint, accentFlags: 2 });
+          } catch {}
+        }
       }
 
       const currentTheme = dbManager.getSetting('theme', 'system');
@@ -193,7 +199,10 @@ function createWindowManager(deps) {
     }
 
     state.mainWindow.webContents.on('dom-ready', () => {
-      if (isMac) {
+      // 根据外观模式应用相应的背景效果
+      if (state.appearanceMode === 'custom') {
+        applyCustomBackground(state.mainWindow);
+      } else if (isMac) {
         applyMacOSBackdrop(state.mainWindow);
       } else if (isWindows) {
         refreshWindowsBackdrop(state.mainWindow, 0);
@@ -201,11 +210,15 @@ function createWindowManager(deps) {
     });
 
     state.mainWindow.webContents.on('did-finish-load', () => {
-      if (isMac) {
+      // 根据外观模式应用相应的背景效果
+      if (state.appearanceMode === 'custom') {
+        applyCustomBackground(state.mainWindow);
+      } else if (isMac) {
         applyMacOSBackdrop(state.mainWindow);
       } else if (isWindows) {
         refreshWindowsBackdrop(state.mainWindow, 1);
       }
+      
       if (!isDev) {
         try {
           const cssDir = path.join(__dirname, '../../out/_next/static/css');
@@ -246,7 +259,13 @@ function createWindowManager(deps) {
       const silentStart = dbManager.getSetting('silentStart', false);
       if (!silentStart) {
         state.mainWindow.show();
-        refreshWindowsBackdrop(state.mainWindow, 1);
+        
+        // 根据外观模式应用相应的背景效果
+        if (state.appearanceMode === 'custom') {
+          applyCustomBackground(state.mainWindow);
+        } else if (isWindows) {
+          refreshWindowsBackdrop(state.mainWindow, 1);
+        }
       } else {
         console.log('Silent start mode: window not shown');
       }
