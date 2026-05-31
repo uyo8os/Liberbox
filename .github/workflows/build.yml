@@ -4,8 +4,8 @@ on:
     tags:
       - v*
     paths-ignore:
-      - 'README.md'
-      - '.github/ISSUE_TEMPLATE/**'
+      - "README.md"
+      - ".github/ISSUE_TEMPLATE/**"
   workflow_dispatch:
 
 permissions: write-all
@@ -27,13 +27,27 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.21'
+          go-version: "1.21"
+
+      - name: Ensure tools directory
+        run: New-Item -ItemType Directory -Force -Path tools | Out-Null
+        shell: pwsh
 
       - name: Build SysProxy
         run: |
           cd native/sysproxy
-          ./build-all.bat ${{ matrix.arch }}
-        shell: cmd
+          go mod tidy
+          $env:GOOS = "windows"
+          $env:CGO_ENABLED = "0"
+          if ("${{ matrix.arch }}" -eq "x64") {
+            $env:GOARCH = "amd64"
+          } elseif ("${{ matrix.arch }}" -eq "ia32") {
+            $env:GOARCH = "386"
+          } elseif ("${{ matrix.arch }}" -eq "arm64") {
+            $env:GOARCH = "arm64"
+          }
+          go build -ldflags="-s -w" -o ../../tools/sysproxy.exe .
+        shell: pwsh
 
       - name: Build Helper Service
         run: |
@@ -51,10 +65,30 @@ jobs:
           go build -ldflags="-s -w" -o ../../tools/flyclash-helper.exe .
         shell: pwsh
 
+      - name: Download Speedtest CLI
+        run: |
+          $zipPath = "tools/speedtest.zip"
+          $extractDir = "tools/speedtest-cli"
+          $url = "https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-win64.zip"
+
+          Invoke-WebRequest -Uri $url -OutFile $zipPath
+          if (Test-Path $extractDir) {
+            Remove-Item -Recurse -Force $extractDir
+          }
+          Expand-Archive -Path $zipPath -DestinationPath $extractDir -Force
+
+          $candidate = Get-ChildItem -Path $extractDir -Recurse -Filter speedtest.exe | Select-Object -First 1
+          if (-not $candidate) {
+            throw "speedtest.exe not found after extracting Speedtest CLI"
+          }
+
+          Copy-Item $candidate.FullName "tools/speedtest.exe" -Force
+        shell: pwsh
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install Dependencies
         env:
@@ -64,10 +98,10 @@ jobs:
 
       - name: Prepare (Download Mihomo Core)
         run: node scripts/prepare.mjs --${{ matrix.arch }}
-      
+
       - name: Build Next.js
         run: npm run build
-      
+
       - name: Build Electron
         env:
           npm_config_arch: ${{ matrix.arch }}
@@ -122,7 +156,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install Dependencies
         env:
@@ -192,13 +226,13 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-      
+          node-version: "20"
+
       - name: Install Dependencies
         env:
           npm_config_arch: ${{ matrix.arch }}
@@ -207,16 +241,16 @@ jobs:
 
       - name: Prepare (Download Mihomo Core)
         run: node scripts/prepare.mjs --${{ matrix.arch }}
-      
+
       - name: Build Next.js
         run: npm run build
-      
+
       - name: Build Electron
         env:
           npm_config_arch: ${{ matrix.arch }}
           npm_config_target_arch: ${{ matrix.arch }}
         run: npm run electron:build:ci
-      
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -249,4 +283,3 @@ jobs:
           prerelease: true
           draft: false
           token: ${{ secrets.GITHUB_TOKEN }}
-
