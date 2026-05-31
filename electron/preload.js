@@ -664,37 +664,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
   saveProxiesConfig: (proxies, configPath) =>
     ipcRenderer.invoke("save-proxies-config", proxies, configPath),
 
-  // AI Assistant: raw config file read/write/validate
-  readConfigFile: () => ipcRenderer.invoke("ai-read-config-file"),
-  writeConfigFile: (content) =>
-    ipcRenderer.invoke("ai-write-config-file", content),
-  validateConfig: (content) =>
-    ipcRenderer.invoke("ai-validate-config", content),
-  editConfigAtomic: (oldString, newString) =>
-    ipcRenderer.invoke("ai-edit-config-atomic", oldString, newString),
-
-  // AI API proxy (bypass CORS)
-  aiProxyFetch: (config) => ipcRenderer.invoke("ai-proxy-fetch", config),
-  aiProxyStreamStart: (config) =>
-    ipcRenderer.invoke("ai-proxy-stream-start", config),
-  aiProxyStreamAbort: (requestId) =>
-    ipcRenderer.invoke("ai-proxy-stream-abort", requestId),
-  onAiProxyStreamChunk: (callback) => {
-    const handler = (_, requestId, chunk) => callback(requestId, chunk);
-    ipcRenderer.on("ai-proxy-stream-chunk", handler);
-    return () => ipcRenderer.removeListener("ai-proxy-stream-chunk", handler);
-  },
-  onAiProxyStreamEnd: (callback) => {
-    const handler = (_, requestId) => callback(requestId);
-    ipcRenderer.on("ai-proxy-stream-end", handler);
-    return () => ipcRenderer.removeListener("ai-proxy-stream-end", handler);
-  },
-  onAiProxyStreamError: (callback) => {
-    const handler = (_, requestId, error) => callback(requestId, error);
-    ipcRenderer.on("ai-proxy-stream-error", handler);
-    return () => ipcRenderer.removeListener("ai-proxy-stream-error", handler);
-  },
-
   // 流量历史
   getTrafficToday: () => ipcRenderer.invoke("traffic-history:get-today"),
   getTrafficMonth: (yearMonth) =>

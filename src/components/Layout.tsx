@@ -26,7 +26,6 @@ import {
 } from "@radix-ui/react-icons";
 import { useProviderAvailability } from "@/hooks/use-provider-availability";
 import CloudOutlineIcon from "@/components/icons/CloudOutlineIcon";
-import { Bot } from "lucide-react";
 import TitleBar from "@/components/TitleBar";
 import { showToast } from "@/components/ui/toast";
 import { useTranslation } from "react-i18next";
@@ -270,11 +269,6 @@ export default function Layout({ children }: LayoutProps) {
         name: t("nav.logs"),
         href: "/logs",
         icon: <InfoCircledIcon className="w-5 h-5" />,
-      },
-      {
-        name: t("nav.aiAssistant"),
-        href: "/ai-assistant",
-        icon: <Bot className="w-5 h-5" />,
       },
       {
         name: t("nav.settings"),
@@ -932,12 +926,10 @@ export default function Layout({ children }: LayoutProps) {
     pathname.startsWith("/providers") ||
     pathname.startsWith("/converter") ||
     pathname.startsWith("/logs") ||
-    pathname.startsWith("/ai-assistant") ||
-    pathname.startsWith("/ai-settings") ||
     pathname.startsWith("/proxy-icon-settings");
 
   // Pages that manage their own internal scrolling and need full height passthrough
-  const isFullHeight = pathname.startsWith("/ai-assistant");
+  const isFullHeight = false;
 
   return (
     <>
