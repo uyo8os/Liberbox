@@ -28,9 +28,6 @@ const { RunningMode, setRunningMode } = require("./utils/running-mode");
 
 // 新的 helper 服务是独立的 Go 程序，不再需要 service-worker 模式
 {
-  // 导入媒体检测模块
-  const { testMediaStreaming } = require("./mediatest");
-
   // 导入图标提取模块
   const { getIconDataURL } = require("./icon");
 
@@ -78,7 +75,6 @@ const { RunningMode, setRunningMode } = require("./utils/running-mode");
 
   context.set("userDataPath", userDataPath);
   context.set("configDir", configDir);
-  context.set("testMediaStreaming", testMediaStreaming);
 
   // 初始化数据库
   const DatabaseManager = require("./database/db-manager");
@@ -219,10 +215,6 @@ const { RunningMode, setRunningMode } = require("./utils/running-mode");
   // 注册配置图标处理器
   const { registerConfigIconHandlers } = require("./ipc-handlers/config-icon");
   registerConfigIconHandlers(app);
-
-  // 注册订阅转换器处理器
-  const { registerConverterHandlers } = require("./ipc-handlers/converter");
-  registerConverterHandlers(app, dbManager);
 
   // 注册 UWP 回环豁免管理处理器
   const {
@@ -518,10 +510,6 @@ const { RunningMode, setRunningMode } = require("./utils/running-mode");
     getAutoLaunchState,
   } = require("./ipc-handlers/auto-launch");
 
-  // 测速功能
-  const { registerSpeedtestHandlers } = require("./ipc-handlers/speedtest");
-  registerSpeedtestHandlers({ isDev });
-
   // =====================================================================
   // Static server (production mode)
   // =====================================================================
@@ -660,7 +648,6 @@ const { RunningMode, setRunningMode } = require("./utils/running-mode");
       stopMihomoLogs,
       fetchConnectionsInfo,
       getIconDataURL,
-      testMediaStreaming,
       setAutoLaunch,
       getAutoLaunchState,
       shell,

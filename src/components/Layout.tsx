@@ -924,7 +924,6 @@ export default function Layout({ children }: LayoutProps) {
     pathname.startsWith("/tools") ||
     pathname.startsWith("/settings") ||
     pathname.startsWith("/providers") ||
-    pathname.startsWith("/converter") ||
     pathname.startsWith("/logs") ||
     pathname.startsWith("/proxy-icon-settings");
 

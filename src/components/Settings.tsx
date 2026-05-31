@@ -1527,31 +1527,30 @@ export default function Settings() {
                 </p>
 
                 <div className="bg-gray-50 dark:bg-[#222222] p-4 rounded-md mb-6 text-left w-full max-w-lg">
-                  <p className="text-sm text-gray-700 dark:text-gray-200 mb-2">
-                    {t("settings.aboutDescription")}
-                  </p>
                   <p className="text-sm text-gray-700 dark:text-gray-200">
-                    {t("settings.aboutFeatures")}
+                    {t("settings.aboutDescription")}
                   </p>
                 </div>
 
                 <div className="flex flex-wrap gap-3 w-full max-w-lg justify-center">
-                  <a
+                  {/* 已注释：Telegram 群组按钮 */}
+                  {/* <a
                     className="flex items-center justify-center py-2 px-4 bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 dark:from-gray-700 dark:to-gray-800 dark:hover:from-gray-600 dark:hover:to-gray-700 text-gray-800 dark:text-gray-200 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
                     href="https://t.me/liberbox"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     {t("settings.clashProject")}
-                  </a>
-                  <a
+                  </a> */}
+                  {/* 已注释：Liberbox 项目按钮 */}
+                  {/* <a
                     className="flex items-center justify-center py-2 px-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
                     href="https://github.com/uyo8os/Liberbox"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     {t("settings.liberboxProject")}
-                  </a>
+                  </a> */}
                   <Button
                     onClick={handleManualUpdateCheck}
                     disabled={isCheckingUpdate}

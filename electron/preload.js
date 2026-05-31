@@ -198,23 +198,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
     }
   },
 
-  // 测速工具
-  runSpeedtest: () => ipcRenderer.invoke("run-speedtest"),
-  // 直接运行speedtest并接收实时输出
-  runSpeedtestDirect: () => ipcRenderer.invoke("run-speedtest-direct"),
-  // 通过代理进行测速
-  runProxySpeedtest: (options) =>
-    ipcRenderer.invoke("run-proxy-speedtest", options),
-  // 测试UDP连通性
-  testUdpConnectivity: (options) =>
-    ipcRenderer.invoke("test-udp-connectivity", options),
-  // 接收speedtest实时输出
-  onSpeedtestOutput: (callback) => {
-    const handler = (_, data) => callback(data);
-    ipcRenderer.on("speedtest-output", handler);
-    return () => ipcRenderer.removeListener("speedtest-output", handler);
-  },
-
   openFileInDefaultApp: (filePath) =>
     ipcRenderer.invoke("open-file-in-default-app", filePath),
 
@@ -556,7 +539,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
       ipcRenderer.removeAllListeners("theme-changed");
       ipcRenderer.removeAllListeners("traffic-update");
       ipcRenderer.removeAllListeners("connections-update");
-      ipcRenderer.removeAllListeners("speedtest-output");
       ipcRenderer.removeAllListeners("service-restarted");
       ipcRenderer.removeAllListeners("test-all-nodes");
       ipcRenderer.removeAllListeners("connections-closed");

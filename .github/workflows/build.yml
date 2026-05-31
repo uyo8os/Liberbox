@@ -67,26 +67,6 @@ jobs:
           go build -ldflags="-s -w" -o ../../tools/liberbox-helper.exe .
         shell: pwsh
 
-      - name: Download Speedtest CLI
-        run: |
-          $zipPath = "tools/speedtest.zip"
-          $extractDir = "tools/speedtest-cli"
-          $url = "https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-win64.zip"
-
-          Invoke-WebRequest -Uri $url -OutFile $zipPath
-          if (Test-Path $extractDir) {
-            Remove-Item -Recurse -Force $extractDir
-          }
-          Expand-Archive -Path $zipPath -DestinationPath $extractDir -Force
-
-          $candidate = Get-ChildItem -Path $extractDir -Recurse -Filter speedtest.exe | Select-Object -First 1
-          if (-not $candidate) {
-            throw "speedtest.exe not found after extracting Speedtest CLI"
-          }
-
-          Copy-Item $candidate.FullName "tools/speedtest.exe" -Force
-        shell: pwsh
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
