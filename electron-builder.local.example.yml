@@ -1,0 +1,39 @@
+# Local electron-builder config template
+#
+# Usage:
+# 1) Copy this file to `electron-builder.local.yml`
+# 2) Keep `electron-builder.local.yml` for local use only (it is gitignored)
+# 3) Build with: npm run electron:build
+#
+# Notes:
+# - This file extends the shared `electron-builder.yml`
+# - You can uncomment platform/arch overrides below for local-only builds
+
+extends: ./electron-builder.yml
+
+# Ensure local build never publishes artifacts
+publish: null
+
+# Optional: keep local output separate if needed
+# directories:
+#   output: dist-local
+
+# Optional: local windows-only quick build example
+# win:
+#   target:
+#     - target: nsis
+#       arch:
+#         - x64
+
+# Optional: local macOS quick build example
+# mac:
+#   target:
+#     - dmg
+#     - zip
+#   artifactName: ${productName}-${version}-${arch}.${ext}
+
+# Optional: local Linux quick build example
+# linux:
+#   target:
+#     - deb
+#     - rpm
