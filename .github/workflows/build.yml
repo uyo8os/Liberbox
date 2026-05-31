@@ -28,6 +28,8 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "1.21"
+          cache-dependency-path: |
+            native/helper/go.sum
 
       - name: Ensure tools directory
         run: New-Item -ItemType Directory -Force -Path tools | Out-Null
