@@ -64,7 +64,7 @@ jobs:
           } elseif ("${{ matrix.arch }}" -eq "arm64") {
             $env:GOARCH = "arm64"
           }
-          go build -ldflags="-s -w" -o ../../tools/flyclash-helper.exe .
+          go build -ldflags="-s -w" -o ../../tools/liberbox-helper.exe .
         shell: pwsh
 
       - name: Download Speedtest CLI

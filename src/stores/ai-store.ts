@@ -1,9 +1,13 @@
-import { create } from 'zustand';
-import type { AiApiConfig, ChatMessage, ToolCallInfo } from '@/services/ai/ai-api-client';
+import { create } from "zustand";
+import type {
+  AiApiConfig,
+  ChatMessage,
+  ToolCallInfo,
+} from "@/services/ai/ai-api-client";
 
 export interface AiMessage {
   id: string;
-  role: 'user' | 'assistant' | 'tool';
+  role: "user" | "assistant" | "tool";
   content: string;
   thinking?: string;
   toolCalls?: ToolCallInfo[];
@@ -71,17 +75,29 @@ interface AiStore {
   saveToStorage: () => void;
 }
 
-const STORAGE_KEY = 'flyclash-ai-store';
+const STORAGE_KEY = "liberbox-ai-store";
 
-function loadState(): Partial<Pick<AiStore, 'conversations' | 'apiConfigs' | 'settings' | 'currentConversationId'>> {
+function loadState(): Partial<
+  Pick<
+    AiStore,
+    "conversations" | "apiConfigs" | "settings" | "currentConversationId"
+  >
+> {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);
-  } catch { /* empty */ }
+  } catch {
+    /* empty */
+  }
   return {};
 }
 
-function saveState(state: Pick<AiStore, 'conversations' | 'apiConfigs' | 'settings' | 'currentConversationId'>) {
+function saveState(
+  state: Pick<
+    AiStore,
+    "conversations" | "apiConfigs" | "settings" | "currentConversationId"
+  >,
+) {
   try {
     const t0 = performance.now();
     const json = JSON.stringify({
@@ -93,15 +109,24 @@ function saveState(state: Pick<AiStore, 'conversations' | 'apiConfigs' | 'settin
     const t1 = performance.now();
     localStorage.setItem(STORAGE_KEY, json);
     const t2 = performance.now();
-    if (typeof window !== 'undefined' && window.electronAPI?.debugLog) {
-      window.electronAPI.debugLog(`saveState: stringify=${(t1 - t0).toFixed(1)}ms, setItem=${(t2 - t1).toFixed(1)}ms, size=${(json.length / 1024).toFixed(1)}KB`);
+    if (typeof window !== "undefined" && window.electronAPI?.debugLog) {
+      window.electronAPI.debugLog(
+        `saveState: stringify=${(t1 - t0).toFixed(1)}ms, setItem=${(t2 - t1).toFixed(1)}ms, size=${(json.length / 1024).toFixed(1)}KB`,
+      );
     }
-  } catch { /* empty */ }
+  } catch {
+    /* empty */
+  }
 }
 
 // Debounced version for high-frequency updates (streaming, tool status changes)
 let _saveTimer: ReturnType<typeof setTimeout> | null = null;
-function saveStateDebounced(state: Pick<AiStore, 'conversations' | 'apiConfigs' | 'settings' | 'currentConversationId'>) {
+function saveStateDebounced(
+  state: Pick<
+    AiStore,
+    "conversations" | "apiConfigs" | "settings" | "currentConversationId"
+  >,
+) {
   if (_saveTimer) clearTimeout(_saveTimer);
   _saveTimer = setTimeout(() => {
     _saveTimer = null;
@@ -110,7 +135,12 @@ function saveStateDebounced(state: Pick<AiStore, 'conversations' | 'apiConfigs' 
 }
 
 // Flush any pending debounced save immediately
-function flushSave(state: Pick<AiStore, 'conversations' | 'apiConfigs' | 'settings' | 'currentConversationId'>) {
+function flushSave(
+  state: Pick<
+    AiStore,
+    "conversations" | "apiConfigs" | "settings" | "currentConversationId"
+  >,
+) {
   if (_saveTimer) {
     clearTimeout(_saveTimer);
     _saveTimer = null;
@@ -133,13 +163,16 @@ export const useAiStore = create<AiStore>((set, get) => {
       const id = `conv_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
       const conv: Conversation = {
         id,
-        title: '',
+        title: "",
         messages: [],
         createdAt: Date.now(),
         updatedAt: Date.now(),
       };
       set((s) => {
-        const next = { conversations: [conv, ...s.conversations], currentConversationId: id };
+        const next = {
+          conversations: [conv, ...s.conversations],
+          currentConversationId: id,
+        };
         saveState({ ...s, ...next });
         return next;
       });
@@ -149,9 +182,10 @@ export const useAiStore = create<AiStore>((set, get) => {
     deleteConversation: (id) => {
       set((s) => {
         const conversations = s.conversations.filter((c) => c.id !== id);
-        const currentConversationId = s.currentConversationId === id
-          ? (conversations[0]?.id || null)
-          : s.currentConversationId;
+        const currentConversationId =
+          s.currentConversationId === id
+            ? conversations[0]?.id || null
+            : s.currentConversationId;
         const next = { conversations, currentConversationId };
         saveState({ ...s, ...next });
         return next;
@@ -168,7 +202,7 @@ export const useAiStore = create<AiStore>((set, get) => {
     updateConversationTitle: (id, title) => {
       set((s) => {
         const conversations = s.conversations.map((c) =>
-          c.id === id ? { ...c, title, updatedAt: Date.now() } : c
+          c.id === id ? { ...c, title, updatedAt: Date.now() } : c,
         );
         saveState({ ...s, conversations });
         return { conversations };
@@ -189,13 +223,25 @@ export const useAiStore = create<AiStore>((set, get) => {
         let conversations = s.conversations;
         if (!convId) {
           convId = `conv_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-          const conv: Conversation = { id: convId, title: '', messages: [], createdAt: Date.now(), updatedAt: Date.now() };
+          const conv: Conversation = {
+            id: convId,
+            title: "",
+            messages: [],
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+          };
           conversations = [conv, ...conversations];
         }
         conversations = conversations.map((c) =>
-          c.id === convId ? { ...c, messages: [...c.messages, msg], updatedAt: Date.now() } : c
+          c.id === convId
+            ? { ...c, messages: [...c.messages, msg], updatedAt: Date.now() }
+            : c,
         );
-        saveStateDebounced({ ...s, conversations, currentConversationId: convId });
+        saveStateDebounced({
+          ...s,
+          conversations,
+          currentConversationId: convId,
+        });
         return { conversations, currentConversationId: convId };
       });
     },
@@ -206,7 +252,9 @@ export const useAiStore = create<AiStore>((set, get) => {
           if (c.id !== s.currentConversationId) return c;
           return {
             ...c,
-            messages: c.messages.map((m) => (m.id === msgId ? { ...m, ...updates } : m)),
+            messages: c.messages.map((m) =>
+              m.id === msgId ? { ...m, ...updates } : m,
+            ),
             updatedAt: Date.now(),
           };
         });
@@ -217,7 +265,9 @@ export const useAiStore = create<AiStore>((set, get) => {
 
     getCurrentMessages: () => {
       const s = get();
-      const conv = s.conversations.find((c) => c.id === s.currentConversationId);
+      const conv = s.conversations.find(
+        (c) => c.id === s.currentConversationId,
+      );
       return conv?.messages || [];
     },
 
@@ -231,7 +281,9 @@ export const useAiStore = create<AiStore>((set, get) => {
 
     updateApiConfig: (id, updates) => {
       set((s) => {
-        const apiConfigs = s.apiConfigs.map((c) => (c.id === id ? { ...c, ...updates } : c));
+        const apiConfigs = s.apiConfigs.map((c) =>
+          c.id === id ? { ...c, ...updates } : c,
+        );
         saveState({ ...s, apiConfigs });
         return { apiConfigs };
       });
@@ -247,7 +299,10 @@ export const useAiStore = create<AiStore>((set, get) => {
 
     setActiveConfig: (id) => {
       set((s) => {
-        const apiConfigs = s.apiConfigs.map((c) => ({ ...c, active: c.id === id }));
+        const apiConfigs = s.apiConfigs.map((c) => ({
+          ...c,
+          active: c.id === id,
+        }));
         saveState({ ...s, apiConfigs });
         return { apiConfigs };
       });

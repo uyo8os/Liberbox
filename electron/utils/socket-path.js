@@ -5,7 +5,7 @@ const fsSync = require('fs');
 
 // 服务模式下使用固定的管道名称
 const SERVICE_MODE_PIPE_NAME = '\\\\.\\pipe\\flycast-mihomo-service';
-const SERVICE_MODE_SOCKET_PATH = '/tmp/flyclash-mihomo-service.sock';
+const SERVICE_MODE_SOCKET_PATH = '/tmp/liberbox-mihomo-service.sock';
 
 // 是否使用服务模式（由外部设置）
 let useServiceMode = false;
@@ -40,7 +40,7 @@ function getMihomoSocketPath() {
     // 非服务模式使用进程特定的管道
     const sessionId = process.env.SESSIONNAME || process.env.USERNAME || 'default';
     const processId = process.pid;
-    return `\\\\.\\pipe\\FlyClash\\mihomo-${sessionId}-${processId}`;
+    return `\\\\.\\pipe\\Liberbox\\mihomo-${sessionId}-${processId}`;
   } else {
     // Unix Domain Socket
     if (useServiceMode) {
@@ -48,7 +48,7 @@ function getMihomoSocketPath() {
     }
     const uid = process.getuid ? process.getuid() : 'unknown';
     const processId = process.pid;
-    const socketDir = path.join(os.tmpdir(), `flyclash-${uid}`);
+    const socketDir = path.join(os.tmpdir(), `liberbox-${uid}`);
     try {
       fsSync.mkdirSync(socketDir, { recursive: true, mode: 0o700 });
       fsSync.chmodSync(socketDir, 0o700);

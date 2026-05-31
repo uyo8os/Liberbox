@@ -62,7 +62,7 @@ export function IpAddressCard() {
 
         try {
           const response = await fetch(url, {
-            headers: { 'User-Agent': 'FlyClash/1.0' },
+            headers: { 'User-Agent': 'Liberbox/1.0' },
           });
 
           if (!response.ok) continue;

@@ -1,4 +1,4 @@
-module flyclash-helper
+module liberbox-helper
 
 go 1.21
 

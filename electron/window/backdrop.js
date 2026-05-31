@@ -144,7 +144,7 @@ function createBackdropManager(deps) {
       return;
     }
 
-    const key = Symbol.for('flyclash.backdropNudgeCount');
+    const key = Symbol.for('liberbox.backdropNudgeCount');
     win[key] = (win[key] || 0) + 1;
     if (win[key] > 4) {
       return;

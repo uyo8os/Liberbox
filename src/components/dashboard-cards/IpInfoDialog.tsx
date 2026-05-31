@@ -128,7 +128,7 @@ export function IpInfoDialog({ open, onOpenChange }: IpInfoDialogProps) {
     for (const service of services) {
       try {
         const response = await fetch(service.url, {
-          headers: { 'User-Agent': 'FlyClash/1.0' },
+          headers: { 'User-Agent': 'Liberbox/1.0' },
         });
 
         if (!response.ok) continue;

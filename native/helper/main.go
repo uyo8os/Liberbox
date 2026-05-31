@@ -1,4 +1,4 @@
-// FlyClash Helper Service
+// Liberbox Helper Service
 // 轻量级 Windows 服务，用于以管理员权限启动 mihomo 内核（TUN 模式需要）
 // 使用 Named Pipe 进行 IPC 通信，支持 HMAC-SHA256 签名验证
 
@@ -29,12 +29,12 @@ import (
 )
 
 const (
-	serviceName       = "FlyClashHelperService"
-	serviceDisplay    = "FlyClash Helper Service"
-	serviceDesc       = "FlyClash Helper Service for TUN mode"
-	pipeName          = `\\.\pipe\flyclash-helper-service`
+	serviceName       = "LiberboxHelperService"
+	serviceDisplay    = "Liberbox Helper Service"
+	serviceDesc       = "Liberbox Helper Service for TUN mode"
+	pipeName          = `\\.\pipe\liberbox-helper-service`
 	messageExpirySecs = 30
-	secretSeed        = "flyclash-helper-service-secret-key-v1"
+	secretSeed        = "liberbox-helper-service-secret-key-v1"
 )
 
 var (
@@ -97,7 +97,7 @@ type VersionData struct {
 }
 
 const (
-	keyFileDir = "FlyClash"
+	keyFileDir  = "Liberbox"
 	keyFileName = "service-key"
 	keyLength   = 32
 )
@@ -181,7 +181,7 @@ func main() {
 			log.Fatalf("Service run failed: %v", err)
 		}
 	} else {
-		fmt.Println("FlyClash Helper Service")
+		fmt.Println("Liberbox Helper Service")
 		fmt.Println("Usage:")
 		fmt.Println("  -install    Install service")
 		fmt.Println("  -uninstall  Uninstall service")
@@ -311,7 +311,7 @@ func handleCommand(conn net.Conn, req *IpcRequest) {
 		sendResponse(conn, req.ID, true, data, "")
 
 	case CmdGetVersion:
-		data := VersionData{Service: "FlyClash Helper Service", Version: "1.0.0"}
+		data := VersionData{Service: "Liberbox Helper Service", Version: "1.0.0"}
 		sendResponse(conn, req.ID, true, data, "")
 
 	case CmdStartCore:
@@ -397,15 +397,19 @@ func getAllowedCoreDirs() []string {
 
 	// 2. 当前用户的 AppData（含大小写变体）
 	if appData := os.Getenv("APPDATA"); appData != "" {
-		dirs = append(dirs, filepath.Join(appData, "FlyClash", "cores"))
-		dirs = append(dirs, filepath.Join(appData, "flyclash", "cores"))
+		dirs = append(dirs, filepath.Join(appData, "Liberbox", "cores"))
+		dirs = append(dirs, filepath.Join(appData, "liberbox", "cores"))
+		dirs = append(dirs, filepath.Join(appData, "Liberbox", "cores"))
+		dirs = append(dirs, filepath.Join(appData, "liberbox", "cores"))
 	}
 	if localAppData := os.Getenv("LOCALAPPDATA"); localAppData != "" {
-		dirs = append(dirs, filepath.Join(localAppData, "FlyClash", "cores"))
-		dirs = append(dirs, filepath.Join(localAppData, "flyclash", "cores"))
+		dirs = append(dirs, filepath.Join(localAppData, "Liberbox", "cores"))
+		dirs = append(dirs, filepath.Join(localAppData, "liberbox", "cores"))
+		dirs = append(dirs, filepath.Join(localAppData, "Liberbox", "cores"))
+		dirs = append(dirs, filepath.Join(localAppData, "liberbox", "cores"))
 	}
 
-	// 3. 所有用户的 profile 目录下的 FlyClash/cores
+	// 3. 所有用户的 profile 目录下的 Liberbox/Liberbox cores
 	//    SYSTEM 服务的 USERPROFILE 指向 system32\config\systemprofile，
 	//    所以直接枚举系统盘的 Users 目录
 	usersDirs := []string{}
@@ -434,13 +438,21 @@ func getAllowedCoreDirs() []string {
 			for _, e := range entries {
 				if e.IsDir() {
 					dirs = append(dirs,
-						filepath.Join(usersDir, e.Name(), "AppData", "Roaming", "FlyClash", "cores"))
+						filepath.Join(usersDir, e.Name(), "AppData", "Roaming", "Liberbox", "cores"))
 					dirs = append(dirs,
-						filepath.Join(usersDir, e.Name(), "AppData", "Roaming", "flyclash", "cores"))
+						filepath.Join(usersDir, e.Name(), "AppData", "Roaming", "liberbox", "cores"))
 					dirs = append(dirs,
-						filepath.Join(usersDir, e.Name(), "AppData", "Local", "FlyClash", "cores"))
+						filepath.Join(usersDir, e.Name(), "AppData", "Roaming", "Liberbox", "cores"))
 					dirs = append(dirs,
-						filepath.Join(usersDir, e.Name(), "AppData", "Local", "flyclash", "cores"))
+						filepath.Join(usersDir, e.Name(), "AppData", "Roaming", "liberbox", "cores"))
+					dirs = append(dirs,
+						filepath.Join(usersDir, e.Name(), "AppData", "Local", "Liberbox", "cores"))
+					dirs = append(dirs,
+						filepath.Join(usersDir, e.Name(), "AppData", "Local", "liberbox", "cores"))
+					dirs = append(dirs,
+						filepath.Join(usersDir, e.Name(), "AppData", "Local", "Liberbox", "cores"))
+					dirs = append(dirs,
+						filepath.Join(usersDir, e.Name(), "AppData", "Local", "liberbox", "cores"))
 				}
 			}
 		}
@@ -448,28 +460,37 @@ func getAllowedCoreDirs() []string {
 
 	// 4. ProgramData
 	if pd := os.Getenv("ProgramData"); pd != "" {
-		dirs = append(dirs, filepath.Join(pd, "FlyClash", "cores"))
+		dirs = append(dirs, filepath.Join(pd, "Liberbox", "cores"))
+		dirs = append(dirs, filepath.Join(pd, "Liberbox", "cores"))
 	}
 
 	// 5. macOS/Linux 系统目录
 	if runtime.GOOS == "darwin" {
+		dirs = append(dirs, "/Library/Application Support/Liberbox")
 		dirs = append(dirs, "/Library/Application Support/Flycast")
 	}
 	if runtime.GOOS == "linux" {
+		dirs = append(dirs, "/opt/liberbox")
 		dirs = append(dirs, "/opt/flycast")
 		// 当前用户（可能是 root）
 		if u, err := user.Current(); err == nil {
-			dirs = append(dirs, filepath.Join(u.HomeDir, ".local", "share", "FlyClash", "cores"))
-			dirs = append(dirs, filepath.Join(u.HomeDir, ".local", "share", "flyclash", "cores"))
+			dirs = append(dirs, filepath.Join(u.HomeDir, ".local", "share", "Liberbox", "cores"))
+			dirs = append(dirs, filepath.Join(u.HomeDir, ".local", "share", "liberbox", "cores"))
+			dirs = append(dirs, filepath.Join(u.HomeDir, ".local", "share", "Liberbox", "cores"))
+			dirs = append(dirs, filepath.Join(u.HomeDir, ".local", "share", "liberbox", "cores"))
 		}
 		// 以 root/systemd 运行时枚举 /home/* 下所有用户
 		if entries, err := os.ReadDir("/home"); err == nil {
 			for _, e := range entries {
 				if e.IsDir() {
 					dirs = append(dirs,
-						filepath.Join("/home", e.Name(), ".local", "share", "FlyClash", "cores"))
+						filepath.Join("/home", e.Name(), ".local", "share", "Liberbox", "cores"))
 					dirs = append(dirs,
-						filepath.Join("/home", e.Name(), ".local", "share", "flyclash", "cores"))
+						filepath.Join("/home", e.Name(), ".local", "share", "liberbox", "cores"))
+					dirs = append(dirs,
+						filepath.Join("/home", e.Name(), ".local", "share", "Liberbox", "cores"))
+					dirs = append(dirs,
+						filepath.Join("/home", e.Name(), ".local", "share", "liberbox", "cores"))
 				}
 			}
 		}

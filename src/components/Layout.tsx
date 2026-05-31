@@ -1,7 +1,13 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import classNames from 'classnames';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import classNames from "classnames";
 import {
   HomeIcon,
   GlobeIcon,
@@ -16,16 +22,23 @@ import {
   MixerHorizontalIcon,
   FileTextIcon,
   LayersIcon,
-  CodeIcon
-} from '@radix-ui/react-icons';
-import { useProviderAvailability } from '@/hooks/use-provider-availability';
-import CloudOutlineIcon from '@/components/icons/CloudOutlineIcon';
-import { Bot } from 'lucide-react';
-import TitleBar from '@/components/TitleBar';
-import { showToast } from '@/components/ui/toast';
-import { useTranslation } from 'react-i18next';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+  CodeIcon,
+} from "@radix-ui/react-icons";
+import { useProviderAvailability } from "@/hooks/use-provider-availability";
+import CloudOutlineIcon from "@/components/icons/CloudOutlineIcon";
+import { Bot } from "lucide-react";
+import TitleBar from "@/components/TitleBar";
+import { showToast } from "@/components/ui/toast";
+import { useTranslation } from "react-i18next";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import {
   RELEASES_PAGE_URL,
   ReleaseInfo,
@@ -33,11 +46,11 @@ import {
   compareVersions,
   UPDATE_AVAILABLE_EVENT,
   UpdateEventDetail,
-} from '@/utils/update-check';
+} from "@/utils/update-check";
 
 declare global {
   interface Window {
-    __flyclashPendingUpdate?: UpdateEventDetail;
+    __liberboxPendingUpdate?: UpdateEventDetail;
   }
 }
 
@@ -52,23 +65,30 @@ export default function Layout({ children }: LayoutProps) {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return false;
     }
 
-    const storedState = window.localStorage.getItem('flyclash-sidebar-collapsed');
-    return storedState === 'true';
+    const storedState = window.localStorage.getItem(
+      "liberbox-sidebar-collapsed",
+    );
+    return storedState === "true";
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [appVersion, setAppVersion] = useState('0.1.7');
-  const [pendingUpdate, setPendingUpdate] = useState<(ReleaseInfo & { currentVersion: string }) | null>(null);
+  const [appVersion, setAppVersion] = useState("0.1.7");
+  const [pendingUpdate, setPendingUpdate] = useState<
+    (ReleaseInfo & { currentVersion: string }) | null
+  >(null);
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
   const hasCheckedUpdatesRef = useRef(false);
   const { hasProviders } = useProviderAvailability();
-  const showUpdateDialog = useCallback((release: ReleaseInfo, currentVersion: string) => {
-    setPendingUpdate({ ...release, currentVersion });
-    setUpdateDialogOpen(true);
-  }, []);
+  const showUpdateDialog = useCallback(
+    (release: ReleaseInfo, currentVersion: string) => {
+      setPendingUpdate({ ...release, currentVersion });
+      setUpdateDialogOpen(true);
+    },
+    [],
+  );
 
   const renderMarkdownLinks = useCallback((text: string) => {
     const regex = /\[([^\]]+)]\((https?:\/\/[^\s)]+)\)/g;
@@ -92,7 +112,7 @@ export default function Layout({ children }: LayoutProps) {
           className="text-blue-600 hover:underline dark:text-blue-300 break-words"
         >
           {label}
-        </a>
+        </a>,
       );
 
       lastIndex = match.index + fullMatch.length;
@@ -105,22 +125,25 @@ export default function Layout({ children }: LayoutProps) {
     return result.length > 0 ? result : [text];
   }, []);
 
-  const renderChangelog = useCallback((raw?: string) => {
-    if (!raw || raw.trim().length === 0) {
-      return t('settings.updateNoChangelog');
-    }
+  const renderChangelog = useCallback(
+    (raw?: string) => {
+      if (!raw || raw.trim().length === 0) {
+        return t("settings.updateNoChangelog");
+      }
 
-    const lines = raw.trim().split(/\r?\n/);
-    return (
-      <div className="space-y-2 text-sm text-foreground/90 leading-relaxed break-words">
-        {lines.map((line, idx) => (
-          <div key={idx} className="whitespace-pre-wrap font-mono">
-            {renderMarkdownLinks(line)}
-          </div>
-        ))}
-      </div>
-    );
-  }, [renderMarkdownLinks, t]);
+      const lines = raw.trim().split(/\r?\n/);
+      return (
+        <div className="space-y-2 text-sm text-foreground/90 leading-relaxed break-words">
+          {lines.map((line, idx) => (
+            <div key={idx} className="whitespace-pre-wrap font-mono">
+              {renderMarkdownLinks(line)}
+            </div>
+          ))}
+        </div>
+      );
+    },
+    [renderMarkdownLinks, t],
+  );
 
   // 避免 SSR hydration 不匹配
   useEffect(() => {
@@ -128,16 +151,16 @@ export default function Layout({ children }: LayoutProps) {
   }, []);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     const ua = navigator.userAgent.toLowerCase();
     const body = document.body;
     const classes: string[] = [];
 
-    if (ua.includes('windows')) {
-      classes.push('platform-windows');
-    } else if (ua.includes('macintosh') || ua.includes('mac os')) {
-      classes.push('platform-macos');
+    if (ua.includes("windows")) {
+      classes.push("platform-windows");
+    } else if (ua.includes("macintosh") || ua.includes("mac os")) {
+      classes.push("platform-macos");
     }
 
     classes.forEach((cls) => body.classList.add(cls));
@@ -148,13 +171,15 @@ export default function Layout({ children }: LayoutProps) {
   }, []);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     const triggerResize = () => {
-      window.dispatchEvent(new Event('resize'));
+      window.dispatchEvent(new Event("resize"));
     };
 
-    const timers = [80, 220, 520].map((delay) => window.setTimeout(triggerResize, delay));
+    const timers = [80, 220, 520].map((delay) =>
+      window.setTimeout(triggerResize, delay),
+    );
 
     return () => {
       timers.forEach((id) => window.clearTimeout(id));
@@ -162,17 +187,20 @@ export default function Layout({ children }: LayoutProps) {
   }, []);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     const syncTheme = () => {
-      const isDark = document.documentElement.classList.contains('dark');
-      document.body.classList.toggle('theme-dark', isDark);
+      const isDark = document.documentElement.classList.contains("dark");
+      document.body.classList.toggle("theme-dark", isDark);
     };
 
     syncTheme();
 
     const observer = new MutationObserver(syncTheme);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
 
     return () => {
       observer.disconnect();
@@ -180,36 +208,87 @@ export default function Layout({ children }: LayoutProps) {
   }, []);
 
   const handleToggleSidebar = useCallback(() => {
-    setSidebarCollapsed(prev => {
+    setSidebarCollapsed((prev) => {
       const next = !prev;
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem('flyclash-sidebar-collapsed', next ? 'true' : 'false');
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(
+          "liberbox-sidebar-collapsed",
+          next ? "true" : "false",
+        );
       }
       return next;
     });
   }, []);
-  
+
   const menuItems = useMemo(() => {
     const items = [
-      { name: t('nav.dashboard'), href: '/', icon: <DashboardIcon className="w-5 h-5" /> },
-      { name: t('nav.nodes'), href: '/nodes', icon: <GlobeIcon className="w-5 h-5" /> },
-      { name: t('nav.subscriptions'), href: '/subscriptions', icon: <ReaderIcon className="w-5 h-5" /> },
-      { name: t('nav.connections'), href: '/connections', icon: <BarChartIcon className="w-5 h-5" /> },
-      { name: t('nav.matchRules'), href: '/match-rules', icon: <FileTextIcon className="w-5 h-5" /> },
-      { name: t('nav.overrides'), href: '/overrides', icon: <CodeIcon className="w-5 h-5" /> },
-      { name: t('nav.externalResources'), href: '/external-resources', icon: <LayersIcon className="w-5 h-5" /> },
-      { name: t('nav.tools'), href: '/tools', icon: (
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M21.71 20.29L20.29 21.71A1 1 0 0 1 18.88 21.71L7 9.85A3.81 3.81 0 0 1 6 10A4 4 0 0 1 2.22 4.7L4.76 7.24L5.29 6.71L6.71 5.29L7.24 4.76L4.7 2.22A4 4 0 0 1 10 6A3.81 3.81 0 0 1 9.85 7L21.71 18.88A1 1 0 0 1 21.71 20.29M2.29 18.88A1 1 0 0 0 2.29 20.29L3.71 21.71A1 1 0 0 0 5.12 21.71L10.59 16.25L7.76 13.42M20 2L16 4V6L13.83 8.17L15.83 10.17L18 8H20L22 4Z" />
-        </svg>
-      ) },
-      { name: t('nav.logs'), href: '/logs', icon: <InfoCircledIcon className="w-5 h-5" /> },
-      { name: t('nav.aiAssistant'), href: '/ai-assistant', icon: <Bot className="w-5 h-5" /> },
-      { name: t('nav.settings'), href: '/settings', icon: <GearIcon className="w-5 h-5" /> },
+      {
+        name: t("nav.dashboard"),
+        href: "/",
+        icon: <DashboardIcon className="w-5 h-5" />,
+      },
+      {
+        name: t("nav.nodes"),
+        href: "/nodes",
+        icon: <GlobeIcon className="w-5 h-5" />,
+      },
+      {
+        name: t("nav.subscriptions"),
+        href: "/subscriptions",
+        icon: <ReaderIcon className="w-5 h-5" />,
+      },
+      {
+        name: t("nav.connections"),
+        href: "/connections",
+        icon: <BarChartIcon className="w-5 h-5" />,
+      },
+      {
+        name: t("nav.matchRules"),
+        href: "/match-rules",
+        icon: <FileTextIcon className="w-5 h-5" />,
+      },
+      {
+        name: t("nav.overrides"),
+        href: "/overrides",
+        icon: <CodeIcon className="w-5 h-5" />,
+      },
+      {
+        name: t("nav.externalResources"),
+        href: "/external-resources",
+        icon: <LayersIcon className="w-5 h-5" />,
+      },
+      {
+        name: t("nav.tools"),
+        href: "/tools",
+        icon: (
+          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M21.71 20.29L20.29 21.71A1 1 0 0 1 18.88 21.71L7 9.85A3.81 3.81 0 0 1 6 10A4 4 0 0 1 2.22 4.7L4.76 7.24L5.29 6.71L6.71 5.29L7.24 4.76L4.7 2.22A4 4 0 0 1 10 6A3.81 3.81 0 0 1 9.85 7L21.71 18.88A1 1 0 0 1 21.71 20.29M2.29 18.88A1 1 0 0 0 2.29 20.29L3.71 21.71A1 1 0 0 0 5.12 21.71L10.59 16.25L7.76 13.42M20 2L16 4V6L13.83 8.17L15.83 10.17L18 8H20L22 4Z" />
+          </svg>
+        ),
+      },
+      {
+        name: t("nav.logs"),
+        href: "/logs",
+        icon: <InfoCircledIcon className="w-5 h-5" />,
+      },
+      {
+        name: t("nav.aiAssistant"),
+        href: "/ai-assistant",
+        icon: <Bot className="w-5 h-5" />,
+      },
+      {
+        name: t("nav.settings"),
+        href: "/settings",
+        icon: <GearIcon className="w-5 h-5" />,
+      },
     ];
 
     if (hasProviders) {
-      items.splice(7, 0, { name: t('nav.providers'), href: '/providers', icon: <CloudOutlineIcon className="w-5 h-5" /> });
+      items.splice(7, 0, {
+        name: t("nav.providers"),
+        href: "/providers",
+        icon: <CloudOutlineIcon className="w-5 h-5" />,
+      });
     }
 
     return items;
@@ -218,12 +297,12 @@ export default function Layout({ children }: LayoutProps) {
   useEffect(() => {
     const fetchVersion = async () => {
       try {
-        if (typeof window !== 'undefined' && window.electronAPI) {
+        if (typeof window !== "undefined" && window.electronAPI) {
           const version = await window.electronAPI.getAppVersion();
           setAppVersion(version);
         }
       } catch (error) {
-        console.error('获取应用版本号失败:', error);
+        console.error("获取应用版本号失败:", error);
       }
     };
 
@@ -235,35 +314,37 @@ export default function Layout({ children }: LayoutProps) {
     const targetUrl = pendingUpdate.url || RELEASES_PAGE_URL;
 
     try {
-      if (typeof window !== 'undefined' && window.electronAPI?.openExternal) {
+      if (typeof window !== "undefined" && window.electronAPI?.openExternal) {
         await window.electronAPI.openExternal(targetUrl);
-      } else if (typeof window !== 'undefined') {
-        window.open(targetUrl, '_blank');
+      } else if (typeof window !== "undefined") {
+        window.open(targetUrl, "_blank");
       }
     } catch (error) {
-      console.error('打开更新链接失败:', error);
-      if (typeof window !== 'undefined') {
-        window.open(targetUrl, '_blank');
+      console.error("打开更新链接失败:", error);
+      if (typeof window !== "undefined") {
+        window.open(targetUrl, "_blank");
       }
     }
   }, [pendingUpdate]);
 
   const releaseVersionLabel = pendingUpdate
     ? pendingUpdate.displayVersion || `v${pendingUpdate.version}`
-    : '';
+    : "";
 
   const releasePublishedAt = useMemo(() => {
     if (!pendingUpdate?.publishedAt) return null;
     try {
       const date = new Date(pendingUpdate.publishedAt);
-      return Number.isNaN(date.getTime()) ? pendingUpdate.publishedAt : date.toLocaleString();
+      return Number.isNaN(date.getTime())
+        ? pendingUpdate.publishedAt
+        : date.toLocaleString();
     } catch {
       return pendingUpdate.publishedAt;
     }
   }, [pendingUpdate?.publishedAt]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
     if (hasCheckedUpdatesRef.current || hasRunAutoUpdateCheck) return;
     hasCheckedUpdatesRef.current = true;
     hasRunAutoUpdateCheck = true;
@@ -272,17 +353,22 @@ export default function Layout({ children }: LayoutProps) {
 
     const autoCheckUpdates = async () => {
       try {
-        const settingResult = await window.electronAPI?.getSetting?.('autoCheckUpdate', true);
-        const shouldCheck = settingResult === undefined ? true : settingResult.value !== false;
+        const settingResult = await window.electronAPI?.getSetting?.(
+          "autoCheckUpdate",
+          true,
+        );
+        const shouldCheck =
+          settingResult === undefined ? true : settingResult.value !== false;
         if (!shouldCheck) return;
 
         const currentVersion = await window.electronAPI?.getAppVersion?.();
         if (!currentVersion) return;
 
-        const { release: latestRelease, error: fetchError } = await fetchLatestRelease();
+        const { release: latestRelease, error: fetchError } =
+          await fetchLatestRelease();
         if (!latestRelease || canceled) {
           if (fetchError) {
-            console.warn('[UpdateCheck] 自动检查更新失败:', fetchError);
+            console.warn("[UpdateCheck] 自动检查更新失败:", fetchError);
           }
           return;
         }
@@ -291,7 +377,7 @@ export default function Layout({ children }: LayoutProps) {
           showUpdateDialog(latestRelease, currentVersion);
         }
       } catch (error) {
-        console.error('[UpdateCheck] 自动检查更新失败:', error);
+        console.error("[UpdateCheck] 自动检查更新失败:", error);
       }
     };
 
@@ -303,43 +389,51 @@ export default function Layout({ children }: LayoutProps) {
   }, [showUpdateDialog]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     const handler = (event: Event) => {
       const detail = (event as CustomEvent<UpdateEventDetail>).detail;
       if (detail?.release && detail?.currentVersion) {
         showUpdateDialog(detail.release, detail.currentVersion);
-        window.__flyclashPendingUpdate = undefined;
+        window.__liberboxPendingUpdate = undefined;
       }
     };
 
     window.addEventListener(UPDATE_AVAILABLE_EVENT, handler as EventListener);
 
-    const pending = window.__flyclashPendingUpdate;
+    const pending = window.__liberboxPendingUpdate;
     if (pending?.release && pending?.currentVersion) {
       showUpdateDialog(pending.release, pending.currentVersion);
-      window.__flyclashPendingUpdate = undefined;
+      window.__liberboxPendingUpdate = undefined;
     }
 
     return () => {
-      window.removeEventListener(UPDATE_AVAILABLE_EVENT, handler as EventListener);
+      window.removeEventListener(
+        UPDATE_AVAILABLE_EVENT,
+        handler as EventListener,
+      );
     };
   }, [showUpdateDialog]);
 
   // 监听 Mihomo 启动失败事件
   useEffect(() => {
-    if (typeof window === 'undefined' || !window.electronAPI) return;
+    if (typeof window === "undefined" || !window.electronAPI) return;
 
-    const handleMihomoStartFailed = (data: { error: string; exitCode?: number }) => {
-      console.error('Mihomo 启动失败:', data);
+    const handleMihomoStartFailed = (data: {
+      error: string;
+      exitCode?: number;
+    }) => {
+      console.error("Mihomo 启动失败:", data);
       showToast({
         message: data.error,
-        type: 'error',
-        duration: 5000
+        type: "error",
+        duration: 5000,
       });
     };
 
-    const cleanup = window.electronAPI.onMihomoStartFailed?.(handleMihomoStartFailed);
+    const cleanup = window.electronAPI.onMihomoStartFailed?.(
+      handleMihomoStartFailed,
+    );
 
     return () => {
       if (cleanup) cleanup();
@@ -348,10 +442,18 @@ export default function Layout({ children }: LayoutProps) {
 
   // 监听并应用自定义背景
   useEffect(() => {
-    if (typeof window === 'undefined' || !window.electronAPI) return;
+    if (typeof window === "undefined" || !window.electronAPI) return;
 
-    const applyCustomBackground = (config: { imageData?: string; imagePath?: string; opacity: number; blur: number }) => {
-      console.log('[Layout] 应用自定义背景配置:', { ...config, imageData: config.imageData ? '(base64 data)' : undefined });
+    const applyCustomBackground = (config: {
+      imageData?: string;
+      imagePath?: string;
+      opacity: number;
+      blur: number;
+    }) => {
+      console.log("[Layout] 应用自定义背景配置:", {
+        ...config,
+        imageData: config.imageData ? "(base64 data)" : undefined,
+      });
 
       const { imageData, imagePath, opacity, blur } = config;
 
@@ -362,20 +464,20 @@ export default function Layout({ children }: LayoutProps) {
         imageUrl = imageData;
       } else if (imagePath) {
         // 备用方案：使用file://路径
-        imageUrl = `file:///${imagePath.replace(/\\/g, '/')}`;
+        imageUrl = `file:///${imagePath.replace(/\\/g, "/")}`;
       } else {
-        console.error('[Layout] 没有提供图片数据或路径');
+        console.error("[Layout] 没有提供图片数据或路径");
         return;
       }
 
       // Sanitize imageUrl to prevent CSS injection
-      imageUrl = imageUrl.replace(/['"\\()]/g, '');
+      imageUrl = imageUrl.replace(/['"\\()]/g, "");
 
       // 查找或创建样式元素
-      let styleElement = document.getElementById('custom-background-style');
+      let styleElement = document.getElementById("custom-background-style");
       if (!styleElement) {
-        styleElement = document.createElement('style');
-        styleElement.id = 'custom-background-style';
+        styleElement = document.createElement("style");
+        styleElement.id = "custom-background-style";
         document.head.appendChild(styleElement);
       }
 
@@ -476,27 +578,27 @@ export default function Layout({ children }: LayoutProps) {
         `;
       }
 
-      console.log('[Layout] 自定义背景已应用');
+      console.log("[Layout] 自定义背景已应用");
     };
 
     // 页面加载时检查并应用已保存的自定义背景
     const loadSavedBackground = async () => {
       // 检查是否已经有背景样式（避免重复加载）
-      const existingStyle = document.getElementById('custom-background-style');
+      const existingStyle = document.getElementById("custom-background-style");
       if (existingStyle) {
-        console.log('[Layout] 背景样式已存在，跳过加载');
+        console.log("[Layout] 背景样式已存在，跳过加载");
         return;
       }
 
       try {
         const appearanceResult = await window.electronAPI.getAppearanceMode();
-        if (appearanceResult.success && appearanceResult.mode === 'custom') {
-          console.log('[Layout] 检测到自定义背景模式，触发应用');
+        if (appearanceResult.success && appearanceResult.mode === "custom") {
+          console.log("[Layout] 检测到自定义背景模式，触发应用");
           // 触发主进程重新发送背景数据
-          await window.electronAPI.setAppearanceMode('custom');
+          await window.electronAPI.setAppearanceMode("custom");
         }
       } catch (error) {
-        console.error('[Layout] 加载自定义背景失败:', error);
+        console.error("[Layout] 加载自定义背景失败:", error);
       }
     };
 
@@ -504,16 +606,19 @@ export default function Layout({ children }: LayoutProps) {
 
     // 清除背景的函数
     const clearBackground = () => {
-      console.log('[Layout] 清除自定义背景');
-      const styleElement = document.getElementById('custom-background-style');
+      console.log("[Layout] 清除自定义背景");
+      const styleElement = document.getElementById("custom-background-style");
       if (styleElement) {
         styleElement.remove();
       }
     };
 
     // 监听背景配置变化
-    const cleanup = window.electronAPI.onCustomBackgroundApply?.(applyCustomBackground);
-    const clearCleanup = window.electronAPI.onClearCustomBackground?.(clearBackground);
+    const cleanup = window.electronAPI.onCustomBackgroundApply?.(
+      applyCustomBackground,
+    );
+    const clearCleanup =
+      window.electronAPI.onClearCustomBackground?.(clearBackground);
 
     return () => {
       if (cleanup) cleanup();
@@ -526,50 +631,79 @@ export default function Layout({ children }: LayoutProps) {
 
   // 监听并应用主题色
   useEffect(() => {
-    if (typeof window === 'undefined' || !window.electronAPI) return;
+    if (typeof window === "undefined" || !window.electronAPI) return;
 
     const applyThemeColor = (color: string) => {
-      console.log('[Layout] 应用主题色:', color);
+      console.log("[Layout] 应用主题色:", color);
 
       // 创建或更新CSS变量
       const root = document.documentElement;
 
       // 将十六进制颜色转换为RGB值
-      const hexToRgb = (hex: string): { r: number; g: number; b: number } | null => {
+      const hexToRgb = (
+        hex: string,
+      ): { r: number; g: number; b: number } | null => {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-          r: parseInt(result[1], 16),
-          g: parseInt(result[2], 16),
-          b: parseInt(result[3], 16)
-        } : null;
+        return result
+          ? {
+              r: parseInt(result[1], 16),
+              g: parseInt(result[2], 16),
+              b: parseInt(result[3], 16),
+            }
+          : null;
       };
 
       const rgb = hexToRgb(color);
       if (rgb) {
         // 设置CSS变量（用于Tailwind和自定义样式）
-        root.style.setProperty('--theme-color', color);
-        root.style.setProperty('--theme-color-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+        root.style.setProperty("--theme-color", color);
+        root.style.setProperty(
+          "--theme-color-rgb",
+          `${rgb.r}, ${rgb.g}, ${rgb.b}`,
+        );
 
         // 更新Tailwind的primary颜色
         // 注意：这需要覆盖Tailwind的默认primary颜色
-        const styleElement = document.getElementById('theme-color-override') || document.createElement('style');
-        styleElement.id = 'theme-color-override';
+        const styleElement =
+          document.getElementById("theme-color-override") ||
+          document.createElement("style");
+        styleElement.id = "theme-color-override";
 
         // 计算悬停时稍微深一点的颜色
         const darkenColor = (hexColor: string, percent: number): string => {
           const num = parseInt(hexColor.slice(1), 16);
-          const r = Math.max(0, Math.min(255, Math.floor((num >> 16) * (1 - percent))));
-          const g = Math.max(0, Math.min(255, Math.floor(((num >> 8) & 0x00FF) * (1 - percent))));
-          const b = Math.max(0, Math.min(255, Math.floor((num & 0x0000FF) * (1 - percent))));
+          const r = Math.max(
+            0,
+            Math.min(255, Math.floor((num >> 16) * (1 - percent))),
+          );
+          const g = Math.max(
+            0,
+            Math.min(255, Math.floor(((num >> 8) & 0x00ff) * (1 - percent))),
+          );
+          const b = Math.max(
+            0,
+            Math.min(255, Math.floor((num & 0x0000ff) * (1 - percent))),
+          );
           return `#${(0x1000000 + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
         };
 
         // 计算浅色版本（用于悬停背景等）
         const lightenColor = (hexColor: string, percent: number): string => {
           const num = parseInt(hexColor.slice(1), 16);
-          const r = Math.min(255, Math.floor((num >> 16) + (255 - (num >> 16)) * percent));
-          const g = Math.min(255, Math.floor(((num >> 8) & 0x00FF) + (255 - ((num >> 8) & 0x00FF)) * percent));
-          const b = Math.min(255, Math.floor((num & 0x0000FF) + (255 - (num & 0x0000FF)) * percent));
+          const r = Math.min(
+            255,
+            Math.floor((num >> 16) + (255 - (num >> 16)) * percent),
+          );
+          const g = Math.min(
+            255,
+            Math.floor(
+              ((num >> 8) & 0x00ff) + (255 - ((num >> 8) & 0x00ff)) * percent,
+            ),
+          );
+          const b = Math.min(
+            255,
+            Math.floor((num & 0x0000ff) + (255 - (num & 0x0000ff)) * percent),
+          );
           return `#${(0x1000000 + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
         };
 
@@ -727,13 +861,13 @@ export default function Layout({ children }: LayoutProps) {
           }
         `;
 
-        if (!document.getElementById('theme-color-override')) {
+        if (!document.getElementById("theme-color-override")) {
           document.head.appendChild(styleElement);
         }
 
-        console.log('[Layout] 主题色已应用');
+        console.log("[Layout] 主题色已应用");
       } else {
-        console.error('[Layout] 无效的颜色值:', color);
+        console.error("[Layout] 无效的颜色值:", color);
       }
     };
 
@@ -742,11 +876,11 @@ export default function Layout({ children }: LayoutProps) {
       try {
         const colorResult = await window.electronAPI.getThemeColor();
         if (colorResult.success && colorResult.color) {
-          console.log('[Layout] 加载保存的主题色:', colorResult.color);
+          console.log("[Layout] 加载保存的主题色:", colorResult.color);
           applyThemeColor(colorResult.color);
         }
       } catch (error) {
-        console.error('[Layout] 加载主题色失败:', error);
+        console.error("[Layout] 加载主题色失败:", error);
       }
     };
 
@@ -763,47 +897,47 @@ export default function Layout({ children }: LayoutProps) {
   const isActivePath = (href: string) => {
     if (!pathname) return false;
     if (pathname === href) return true;
-    return href !== '/' && pathname.startsWith(href);
+    return href !== "/" && pathname.startsWith(href);
   };
 
   const getNavLinkClass = (href: string, collapsed: boolean) =>
     classNames(
-      'group relative flex items-center rounded-lg text-[13px] font-medium transition-all duration-150',
-      collapsed ? 'justify-center px-0 py-2.5' : 'gap-2.5 px-3 py-2',
+      "group relative flex items-center rounded-lg text-[13px] font-medium transition-all duration-150",
+      collapsed ? "justify-center px-0 py-2.5" : "gap-2.5 px-3 py-2",
       isActivePath(href)
-        ? 'bg-primary text-primary-foreground'
-        : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+        ? "bg-primary text-primary-foreground"
+        : "text-muted-foreground hover:text-foreground hover:bg-accent",
     );
 
   const getIconWrapperClass = (href: string, collapsed: boolean) =>
     classNames(
-      'flex h-6 w-6 flex-shrink-0 items-center justify-center',
+      "flex h-6 w-6 flex-shrink-0 items-center justify-center",
       isActivePath(href)
-        ? 'text-primary-foreground'
-        : 'text-muted-foreground group-hover:text-foreground'
+        ? "text-primary-foreground"
+        : "text-muted-foreground group-hover:text-foreground",
     );
 
-  const isDashboard = !pathname || pathname === '/';
+  const isDashboard = !pathname || pathname === "/";
   const isPlainView =
     !pathname ||
-    pathname === '/' ||
-    pathname.startsWith('/nodes') ||
-    pathname.startsWith('/match-rules') ||
-    pathname.startsWith('/overrides') ||
-    pathname.startsWith('/external-resources') ||
-    pathname.startsWith('/subscriptions') ||
-    pathname.startsWith('/connections') ||
-    pathname.startsWith('/tools') ||
-    pathname.startsWith('/settings') ||
-    pathname.startsWith('/providers') ||
-    pathname.startsWith('/converter') ||
-    pathname.startsWith('/logs') ||
-    pathname.startsWith('/ai-assistant') ||
-    pathname.startsWith('/ai-settings') ||
-    pathname.startsWith('/proxy-icon-settings');
+    pathname === "/" ||
+    pathname.startsWith("/nodes") ||
+    pathname.startsWith("/match-rules") ||
+    pathname.startsWith("/overrides") ||
+    pathname.startsWith("/external-resources") ||
+    pathname.startsWith("/subscriptions") ||
+    pathname.startsWith("/connections") ||
+    pathname.startsWith("/tools") ||
+    pathname.startsWith("/settings") ||
+    pathname.startsWith("/providers") ||
+    pathname.startsWith("/converter") ||
+    pathname.startsWith("/logs") ||
+    pathname.startsWith("/ai-assistant") ||
+    pathname.startsWith("/ai-settings") ||
+    pathname.startsWith("/proxy-icon-settings");
 
   // Pages that manage their own internal scrolling and need full height passthrough
-  const isFullHeight = pathname.startsWith('/ai-assistant');
+  const isFullHeight = pathname.startsWith("/ai-assistant");
 
   return (
     <>
@@ -811,136 +945,180 @@ export default function Layout({ children }: LayoutProps) {
         <TitleBar />
 
         <div className="relative z-10 mx-auto flex h-full w-full max-w-[1400px] min-w-0 gap-2 pl-1.5 pr-3 pb-6 pt-10 sm:gap-3 sm:pl-2 sm:pr-4 md:gap-3 md:pl-3 md:pr-5">
-        {/* Sidebar - Desktop */}
-        <aside
-          className={classNames(
-            'hidden md:flex h-full flex-col shrink-0 px-0 transition-[width] duration-300 ease-out',
-            sidebarCollapsed ? 'w-[70px]' : 'w-[220px]'
-          )}
-        >
-          <div
+          {/* Sidebar - Desktop */}
+          <aside
             className={classNames(
-              'flex items-center px-3 pt-6 pb-4 transition-all duration-300',
-              sidebarCollapsed ? 'justify-center' : 'gap-3'
+              "hidden md:flex h-full flex-col shrink-0 px-0 transition-[width] duration-300 ease-out",
+              sidebarCollapsed ? "w-[70px]" : "w-[220px]",
             )}
           >
-            <img src="/logo.png" alt="FlyClash Logo" className="h-8 w-8" />
-            {!sidebarCollapsed && (
-              <div className="leading-tight">
-                <span className="block text-sm font-semibold text-foreground">FlyClash</span>
-                <span className="text-xs text-muted-foreground">
-                  {mounted ? t('layout.desktopClient') : '\u00A0'}
-                </span>
-              </div>
-            )}
-          </div>
-
-          <div className="flex-1 px-3 pb-4">
-            <nav className="flex flex-col gap-1">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={getNavLinkClass(item.href, sidebarCollapsed)}
-                >
-                  <span className={getIconWrapperClass(item.href, sidebarCollapsed)}>
-                    {item.icon}
-                  </span>
-                  {!sidebarCollapsed && <span className="text-[13px]">{mounted ? item.name : '\u00A0'}</span>}
-                  {sidebarCollapsed && <span className="sr-only">{mounted ? item.name : '\u00A0'}</span>}
-                </Link>
-              ))}
-            </nav>
-          </div>
-
-          <div className="px-3 pb-4">
             <div
               className={classNames(
-                'flex items-center gap-2 text-[11px] text-muted-foreground',
-                sidebarCollapsed ? 'justify-center' : 'justify-between'
+                "flex items-center px-3 pt-6 pb-4 transition-all duration-300",
+                sidebarCollapsed ? "justify-center" : "gap-3",
               )}
             >
-              <div className="flex items-center gap-2">
-                <span className="indicator-dot" />
-                {!sidebarCollapsed && <span className="font-medium text-foreground">已连接</span>}
-              </div>
-              <span className="text-muted-foreground">v{appVersion}</span>
-            </div>
-          </div>
-        </aside>
-
-        {/* Main Content */}
-        <div className="flex h-full min-w-0 flex-1 flex-col gap-3 md:gap-4">
-          {/* Mobile Navigation */}
-          <div className="md:hidden">
-            <div className="glass-panel flex items-center justify-between rounded-2xl px-4 py-3" data-hoverable="false">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                  <img src="/logo.png" alt="FlyClash Logo" className="h-5 w-5" />
+              <img src="/logo.png" alt="Liberbox Logo" className="h-8 w-8" />
+              {!sidebarCollapsed && (
+                <div className="leading-tight">
+                  <span className="block text-sm font-semibold text-foreground">
+                    Liberbox
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {mounted ? t("layout.desktopClient") : "\u00A0"}
+                  </span>
                 </div>
-                <span className="text-sm font-semibold text-foreground">FlyClash</span>
-              </div>
-              <button
-                type="button"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-muted-foreground hover:text-foreground"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              >
-                {mobileMenuOpen ? <Cross1Icon className="h-4 w-4" /> : <HamburgerMenuIcon className="h-4 w-4" />}
-              </button>
+              )}
             </div>
 
-            {mobileMenuOpen && (
-              <div className="mt-2 glass-panel space-y-1 rounded-2xl px-2.5 py-2.5" data-hoverable="false">
+            <div className="flex-1 px-3 pb-4">
+              <nav className="flex flex-col gap-1">
                 {menuItems.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={getNavLinkClass(item.href, false)}
+                    className={getNavLinkClass(item.href, sidebarCollapsed)}
                   >
-                    <span className={getIconWrapperClass(item.href, false)}>
+                    <span
+                      className={getIconWrapperClass(
+                        item.href,
+                        sidebarCollapsed,
+                      )}
+                    >
                       {item.icon}
                     </span>
-                    <span className="text-[13px]">{mounted ? item.name : '\u00A0'}</span>
+                    {!sidebarCollapsed && (
+                      <span className="text-[13px]">
+                        {mounted ? item.name : "\u00A0"}
+                      </span>
+                    )}
+                    {sidebarCollapsed && (
+                      <span className="sr-only">
+                        {mounted ? item.name : "\u00A0"}
+                      </span>
+                    )}
                   </Link>
                 ))}
-              </div>
-            )}
-          </div>
+              </nav>
+            </div>
 
-          <div
-            className={classNames(
-              'flex flex-1 flex-col min-w-0',
-              isFullHeight ? 'overflow-hidden' : 'overflow-y-auto custom-scrollbar',
-              { 'glass-panel card-surface rounded-2xl': !isPlainView }
-            )}
-            data-hoverable={!isPlainView ? 'false' : undefined}
-          >
-            <main className={classNames('relative flex-1 min-w-0', isFullHeight && 'h-full overflow-hidden')}>
+            <div className="px-3 pb-4">
               <div
                 className={classNames(
-                  'w-full min-w-0',
-                  isFullHeight ? 'h-full flex flex-col py-3 sm:py-4 md:py-4' : 'py-5 sm:py-6 md:py-6',
-                  isPlainView
-                    ? 'pl-3 pr-2 sm:pl-4 sm:pr-3 md:pl-5 md:pr-3'
-                    : 'mx-auto max-w-[1400px] pl-3 pr-2 sm:pl-4 sm:pr-3 md:pl-5 md:pr-3'
+                  "flex items-center gap-2 text-[11px] text-muted-foreground",
+                  sidebarCollapsed ? "justify-center" : "justify-between",
                 )}
               >
-                {children}
+                <div className="flex items-center gap-2">
+                  <span className="indicator-dot" />
+                  {!sidebarCollapsed && (
+                    <span className="font-medium text-foreground">已连接</span>
+                  )}
+                </div>
+                <span className="text-muted-foreground">v{appVersion}</span>
               </div>
-            </main>
+            </div>
+          </aside>
+
+          {/* Main Content */}
+          <div className="flex h-full min-w-0 flex-1 flex-col gap-3 md:gap-4">
+            {/* Mobile Navigation */}
+            <div className="md:hidden">
+              <div
+                className="glass-panel flex items-center justify-between rounded-2xl px-4 py-3"
+                data-hoverable="false"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+                    <img
+                      src="/logo.png"
+                      alt="Liberbox Logo"
+                      className="h-5 w-5"
+                    />
+                  </div>
+                  <span className="text-sm font-semibold text-foreground">
+                    Liberbox
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-muted-foreground hover:text-foreground"
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                >
+                  {mobileMenuOpen ? (
+                    <Cross1Icon className="h-4 w-4" />
+                  ) : (
+                    <HamburgerMenuIcon className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+
+              {mobileMenuOpen && (
+                <div
+                  className="mt-2 glass-panel space-y-1 rounded-2xl px-2.5 py-2.5"
+                  data-hoverable="false"
+                >
+                  {menuItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={getNavLinkClass(item.href, false)}
+                    >
+                      <span className={getIconWrapperClass(item.href, false)}>
+                        {item.icon}
+                      </span>
+                      <span className="text-[13px]">
+                        {mounted ? item.name : "\u00A0"}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div
+              className={classNames(
+                "flex flex-1 flex-col min-w-0",
+                isFullHeight
+                  ? "overflow-hidden"
+                  : "overflow-y-auto custom-scrollbar",
+                { "glass-panel card-surface rounded-2xl": !isPlainView },
+              )}
+              data-hoverable={!isPlainView ? "false" : undefined}
+            >
+              <main
+                className={classNames(
+                  "relative flex-1 min-w-0",
+                  isFullHeight && "h-full overflow-hidden",
+                )}
+              >
+                <div
+                  className={classNames(
+                    "w-full min-w-0",
+                    isFullHeight
+                      ? "h-full flex flex-col py-3 sm:py-4 md:py-4"
+                      : "py-5 sm:py-6 md:py-6",
+                    isPlainView
+                      ? "pl-3 pr-2 sm:pl-4 sm:pr-3 md:pl-5 md:pr-3"
+                      : "mx-auto max-w-[1400px] pl-3 pr-2 sm:pl-4 sm:pr-3 md:pl-5 md:pr-3",
+                  )}
+                >
+                  {children}
+                </div>
+              </main>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
       {pendingUpdate && (
         <Dialog open={updateDialogOpen} onOpenChange={setUpdateDialogOpen}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>{t('settings.updateAvailableTitle')}</DialogTitle>
+              <DialogTitle>{t("settings.updateAvailableTitle")}</DialogTitle>
               <DialogDescription>
-                {t('settings.updateAvailableDesc', {
+                {t("settings.updateAvailableDesc", {
                   latest: releaseVersionLabel,
                   current: pendingUpdate.currentVersion,
                 })}
@@ -950,13 +1128,15 @@ export default function Layout({ children }: LayoutProps) {
             <div className="space-y-3">
               {releasePublishedAt && (
                 <p className="text-xs text-muted-foreground">
-                  {t('settings.updatePublishedAt', { date: releasePublishedAt })}
+                  {t("settings.updatePublishedAt", {
+                    date: releasePublishedAt,
+                  })}
                 </p>
               )}
 
               <div>
                 <h4 className="text-sm font-semibold text-foreground mb-2">
-                  {t('settings.updateChangelog')}
+                  {t("settings.updateChangelog")}
                 </h4>
                 <div className="max-h-72 overflow-y-auto rounded-2xl bg-muted/30 p-4 text-left">
                   {renderChangelog(pendingUpdate.body)}
@@ -970,13 +1150,13 @@ export default function Layout({ children }: LayoutProps) {
                 onClick={() => setUpdateDialogOpen(false)}
                 className="border border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-400/50 dark:text-blue-300 dark:hover:bg-blue-500/10"
               >
-                {t('settings.updateLater')}
+                {t("settings.updateLater")}
               </Button>
               <Button
                 onClick={handleOpenReleasePage}
                 className="bg-blue-500 hover:bg-blue-600 text-white"
               >
-                {t('settings.updateViewRelease')}
+                {t("settings.updateViewRelease")}
               </Button>
             </DialogFooter>
           </DialogContent>

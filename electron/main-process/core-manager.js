@@ -597,7 +597,7 @@ class CoreManager {
 
       const request = https.get(url, {
         headers: {
-          'User-Agent': 'FlyClash'
+          'User-Agent': 'Liberbox'
         },
         timeout: REQUEST_TIMEOUT_MS
       }, (response) => {
@@ -695,7 +695,7 @@ class CoreManager {
     return new Promise((resolve, reject) => {
       https.get(url, {
         headers: {
-        'User-Agent': 'FlyClash',
+        'User-Agent': 'Liberbox',
         'Accept': 'application/vnd.github+json',
         'X-GitHub-Api-Version': '2022-11-28'
         },

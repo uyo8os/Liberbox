@@ -77,7 +77,7 @@ function registerAppearanceIpcHandlers(deps) {
           if (isMac) {
             applyMacOSBackdrop(state.mainWindow);
           } else if (isWindows) {
-            state.mainWindow[Symbol.for('flyclash.backdropNudgeCount')] = 0;
+            state.mainWindow[Symbol.for('liberbox.backdropNudgeCount')] = 0;
             applyWindowsBackdrop(state.mainWindow);
             refreshWindowsBackdrop(state.mainWindow, 0);
           }

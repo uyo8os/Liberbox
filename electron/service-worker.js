@@ -1,5 +1,5 @@
 /**
- * FlyClash 核心服务工作进程
+ * Liberbox 核心服务工作进程
  * 作为 Windows 服务运行，负责管理 Mihomo 核心进程
  */
 
@@ -522,7 +522,7 @@ function cleanup() {
  * 主函数
  */
 function main() {
-  log('INFO', 'FlyClash Core Service Worker starting...');
+  log('INFO', 'Liberbox Core Service Worker starting...');
 
   // 加载配置
   loadConfig();
@@ -555,7 +555,7 @@ function main() {
     log('ERROR', `Unhandled rejection: ${reason}`);
   });
 
-  log('INFO', 'FlyClash Core Service Worker started');
+  log('INFO', 'Liberbox Core Service Worker started');
 }
 
 // 启动服务

@@ -1305,7 +1305,7 @@ export default function Dashboard() {
                   variant="outline"
                   onClick={() => {
                     if (confirm(t('dashboard.confirmReset'))) {
-                      localStorage.removeItem('flyClash-dashboard-config');
+                      localStorage.removeItem('liberbox-dashboard-config');
                       window.location.reload();
                     }
                   }}
@@ -1357,7 +1357,7 @@ export default function Dashboard() {
         onAddCard={() => setShowAddCardDialog(true)}
         onReset={() => {
           if (confirm(t('dashboard.confirmReset'))) {
-            localStorage.removeItem('flyClash-dashboard-config');
+            localStorage.removeItem('liberbox-dashboard-config');
             window.location.reload();
           }
         }}

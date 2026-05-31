@@ -88,11 +88,11 @@ function getSidecarSocketPath() {
   if (process.platform === 'win32') {
     const sessionId = process.env.SESSIONNAME || process.env.USERNAME || 'default';
     const processId = process.pid;
-    return `\\\\.\\pipe\\FlyClash\\mihomo-${sessionId}-${processId}`;
+    return `\\\\.\\pipe\\Liberbox\\mihomo-${sessionId}-${processId}`;
   } else {
     const uid = process.getuid ? process.getuid() : 'unknown';
     const processId = process.pid;
-    const socketDir = path.join(os.tmpdir(), `flyclash-${uid}`);
+    const socketDir = path.join(os.tmpdir(), `liberbox-${uid}`);
     try {
       fs.mkdirSync(socketDir, { recursive: true, mode: 0o700 });
       fs.chmodSync(socketDir, 0o700);

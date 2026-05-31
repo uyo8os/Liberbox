@@ -7,8 +7,8 @@
  * 备份类型枚举
  */
 const BackupType = {
-  CONFIG_ONLY: 'CONFIG_ONLY',    // 仅配置
-  FULL_BACKUP: 'FULL_BACKUP'     // 全量备份
+  CONFIG_ONLY: "CONFIG_ONLY", // 仅配置
+  FULL_BACKUP: "FULL_BACKUP", // 全量备份
 };
 
 /**
@@ -16,7 +16,7 @@ const BackupType = {
  */
 class BackupData {
   constructor() {
-    this.version = '1.2'; // 与安卓端版本号一致
+    this.version = "1.2"; // 与安卓端版本号一致
     this.timestamp = Date.now();
     this.backupType = BackupType.CONFIG_ONLY;
     this.activeProfile = null; // UUID string of active profile
@@ -40,16 +40,16 @@ class BackupData {
  */
 class ImportedProfileBackup {
   constructor() {
-    this.uuid = ''; // UUID as string
-    this.name = '';
-    this.type = 'URL'; // "FILE", "URL", "EXTERNAL"
-    this.source = '';
+    this.uuid = ""; // UUID as string
+    this.name = "";
+    this.type = "URL"; // "FILE", "URL", "EXTERNAL"
+    this.source = "";
     this.interval = 0;
     this.upload = 0;
     this.download = 0;
     this.total = 0;
     this.expire = 0;
-    this.iconUrl = '';
+    this.iconUrl = "";
     this.createdAt = Date.now();
     this.configContent = null; // config.yaml content
     this.providersContent = {}; // providers files { filename: content }
@@ -61,16 +61,16 @@ class ImportedProfileBackup {
  */
 class PendingProfileBackup {
   constructor() {
-    this.uuid = '';
-    this.name = '';
-    this.type = 'URL';
-    this.source = '';
+    this.uuid = "";
+    this.name = "";
+    this.type = "URL";
+    this.source = "";
     this.interval = 0;
     this.upload = 0;
     this.download = 0;
     this.total = 0;
     this.expire = 0;
-    this.iconUrl = '';
+    this.iconUrl = "";
     this.createdAt = Date.now();
     this.configContent = null;
     this.providersContent = {};
@@ -82,9 +82,9 @@ class PendingProfileBackup {
  */
 class SelectionBackup {
   constructor() {
-    this.uuid = '';
-    this.proxy = '';
-    this.selected = '';
+    this.uuid = "";
+    this.proxy = "";
+    this.selected = "";
   }
 }
 
@@ -104,11 +104,11 @@ class ProxyIconConfigBackup {
  */
 class ProxyIconRuleBackup {
   constructor() {
-    this.id = '';
-    this.name = '';
-    this.regex = '';
-    this.iconType = 'BASE64'; // "BASE64" or "URL"
-    this.iconData = '';
+    this.id = "";
+    this.name = "";
+    this.regex = "";
+    this.iconType = "BASE64"; // "BASE64" or "URL"
+    this.iconData = "";
     this.enabled = true;
     this.priority = 0;
   }
@@ -120,13 +120,13 @@ class ProxyIconRuleBackup {
 class ServiceSettingsBackup {
   constructor() {
     this.bypassPrivateNetwork = true;
-    this.accessControlMode = 'AcceptAll';
+    this.accessControlMode = "AcceptAll";
     this.accessControlPackages = [];
     this.dnsHijacking = true;
     this.systemProxy = true;
     this.allowBypass = true;
     this.allowIpv6 = false;
-    this.tunStackMode = 'system';
+    this.tunStackMode = "system";
     this.dynamicNotification = true;
   }
 }
@@ -137,16 +137,16 @@ class ServiceSettingsBackup {
 class UiSettingsBackup {
   constructor() {
     this.enableVpn = true;
-    this.darkMode = 'Auto';
+    this.darkMode = "Auto";
     this.hideAppIcon = false;
     this.proxyExcludeNotSelectable = false;
     this.proxyLine = 2;
-    this.proxySort = 'Default';
+    this.proxySort = "Default";
     this.appLockEnabled = false;
-    this.appLockPassword = '';
+    this.appLockPassword = "";
     this.appLockBiometricEnabled = false;
     this.appLockTimeout = 300000; // 5分钟
-    this.userAgent = 'meta/0.1.9.3';
+    this.userAgent = "meta/0.1.9.3";
   }
 }
 
@@ -155,11 +155,11 @@ class UiSettingsBackup {
  */
 class WebDAVSettingsBackup {
   constructor() {
-    this.uri = '';
-    this.username = '';
-    this.password = '';
-    this.backupDirectory = 'FlyClash';
-    this.fileName = 'flyclash_backup.zip';
+    this.uri = "";
+    this.username = "";
+    this.password = "";
+    this.backupDirectory = "Liberbox";
+    this.fileName = "liberbox_backup.zip";
   }
 }
 
@@ -169,7 +169,7 @@ class WebDAVSettingsBackup {
 class AppLockSettingsBackup {
   constructor() {
     this.enabled = false;
-    this.passwordHash = '';
+    this.passwordHash = "";
     this.biometricEnabled = false;
     this.timeout = 300000;
   }
@@ -207,9 +207,9 @@ class TrafficDataBackup {
 class OverrideSettingsBackup {
   constructor() {
     this.jsOverrideEnabled = false;
-    this.jsOverrideContent = '';
+    this.jsOverrideContent = "";
     this.yamlOverrideEnabled = false;
-    this.yamlOverrideContent = '';
+    this.yamlOverrideContent = "";
   }
 }
 
@@ -227,5 +227,5 @@ module.exports = {
   AppLockSettingsBackup,
   DashboardConfigBackup,
   TrafficDataBackup,
-  OverrideSettingsBackup
+  OverrideSettingsBackup,
 };

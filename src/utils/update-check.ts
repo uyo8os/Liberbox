@@ -1,11 +1,11 @@
-export const RELEASES_PAGE_URL = 'https://github.com/GtxFury/FlyClash/releases';
+export const RELEASES_PAGE_URL = "https://github.com/uyo8os/Liberbox/releases";
 
 const RELEASE_API_ENDPOINTS = [
-  'https://api.github.com/repos/GtxFury/FlyClash/releases/latest',
-  'https://mirror.ghproxy.com/https://api.github.com/repos/GtxFury/FlyClash/releases/latest',
-  'https://gh.api.99988866.xyz/https://api.github.com/repos/GtxFury/FlyClash/releases/latest'
+  "https://api.github.com/repos/uyo8os/Liberbox/releases/latest",
+  "https://mirror.ghproxy.com/https://api.github.com/repos/uyo8os/Liberbox/releases/latest",
+  "https://gh.api.99988866.xyz/https://api.github.com/repos/uyo8os/Liberbox/releases/latest",
 ];
-export const UPDATE_AVAILABLE_EVENT = 'flyclash-update-available';
+export const UPDATE_AVAILABLE_EVENT = "liberbox-update-available";
 
 export interface ReleaseInfo {
   version: string;
@@ -22,15 +22,19 @@ export interface UpdateEventDetail {
 }
 
 export const normalizeVersion = (value?: string | null) => {
-  if (!value) return '0.0.0';
-  const cleaned = value.trim().replace(/^v/i, '');
+  if (!value) return "0.0.0";
+  const cleaned = value.trim().replace(/^v/i, "");
   const [main] = cleaned.split(/[-+]/);
-  return main || '0.0.0';
+  return main || "0.0.0";
 };
 
 export const compareVersions = (a?: string | null, b?: string | null) => {
-  const aParts = normalizeVersion(a).split('.').map((part) => Number.parseInt(part, 10) || 0);
-  const bParts = normalizeVersion(b).split('.').map((part) => Number.parseInt(part, 10) || 0);
+  const aParts = normalizeVersion(a)
+    .split(".")
+    .map((part) => Number.parseInt(part, 10) || 0);
+  const bParts = normalizeVersion(b)
+    .split(".")
+    .map((part) => Number.parseInt(part, 10) || 0);
   const length = Math.max(aParts.length, bParts.length);
 
   for (let i = 0; i < length; i += 1) {
@@ -56,9 +60,9 @@ export const fetchLatestRelease = async (): Promise<ReleaseFetchResult> => {
     try {
       const response = await fetch(endpoint, {
         headers: {
-          Accept: 'application/vnd.github+json',
+          Accept: "application/vnd.github+json",
         },
-        cache: 'no-store',
+        cache: "no-store",
       });
 
       if (!response.ok) {
@@ -68,14 +72,16 @@ export const fetchLatestRelease = async (): Promise<ReleaseFetchResult> => {
       }
 
       const data = await response.json();
-      const tagName = data?.tag_name || data?.name || '';
+      const tagName = data?.tag_name || data?.name || "";
       const release: ReleaseInfo = {
         version: normalizeVersion(tagName || data?.tag_name || data?.name),
-        displayVersion: tagName || data?.name || '',
-        body: data?.body || '',
-        url: data?.html_url || (tagName ? `${RELEASES_PAGE_URL}/tag/${tagName}` : RELEASES_PAGE_URL),
-        name: data?.name || '',
-        publishedAt: data?.published_at || '',
+        displayVersion: tagName || data?.name || "",
+        body: data?.body || "",
+        url:
+          data?.html_url ||
+          (tagName ? `${RELEASES_PAGE_URL}/tag/${tagName}` : RELEASES_PAGE_URL),
+        name: data?.name || "",
+        publishedAt: data?.published_at || "",
       };
 
       return { release, source: endpoint };
@@ -87,13 +93,18 @@ export const fetchLatestRelease = async (): Promise<ReleaseFetchResult> => {
 
   return {
     release: null,
-    error: errors.join(' | ') || 'Unknown error',
+    error: errors.join(" | ") || "Unknown error",
   };
 };
 
-export const emitUpdateAvailableEvent = (release: ReleaseInfo, currentVersion: string) => {
-  if (typeof window === 'undefined') return;
+export const emitUpdateAvailableEvent = (
+  release: ReleaseInfo,
+  currentVersion: string,
+) => {
+  if (typeof window === "undefined") return;
   const detail: UpdateEventDetail = { release, currentVersion };
-  const event = new CustomEvent<UpdateEventDetail>(UPDATE_AVAILABLE_EVENT, { detail });
+  const event = new CustomEvent<UpdateEventDetail>(UPDATE_AVAILABLE_EVENT, {
+    detail,
+  });
   window.dispatchEvent(event);
 };

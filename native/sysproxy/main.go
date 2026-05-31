@@ -1,4 +1,4 @@
-// FlyClash SysProxy - Windows System Proxy Manager
+// Liberbox SysProxy - Windows System Proxy Manager
 // 用于设置 Windows 系统代理的命令行工具
 //
 // 用法:
@@ -17,14 +17,14 @@ import (
 )
 
 var (
-	wininet              = syscall.NewLazyDLL("wininet.dll")
-	advapi32             = syscall.NewLazyDLL("advapi32.dll")
-	internetSetOptionW   = wininet.NewProc("InternetSetOptionW")
-	regOpenKeyExW        = advapi32.NewProc("RegOpenKeyExW")
-	regSetValueExW       = advapi32.NewProc("RegSetValueExW")
-	regDeleteValueW      = advapi32.NewProc("RegDeleteValueW")
-	regQueryValueExW     = advapi32.NewProc("RegQueryValueExW")
-	regCloseKey          = advapi32.NewProc("RegCloseKey")
+	wininet            = syscall.NewLazyDLL("wininet.dll")
+	advapi32           = syscall.NewLazyDLL("advapi32.dll")
+	internetSetOptionW = wininet.NewProc("InternetSetOptionW")
+	regOpenKeyExW      = advapi32.NewProc("RegOpenKeyExW")
+	regSetValueExW     = advapi32.NewProc("RegSetValueExW")
+	regDeleteValueW    = advapi32.NewProc("RegDeleteValueW")
+	regQueryValueExW   = advapi32.NewProc("RegQueryValueExW")
+	regCloseKey        = advapi32.NewProc("RegCloseKey")
 )
 
 const (
@@ -101,7 +101,7 @@ func main() {
 }
 
 func printUsage() {
-	fmt.Println(`FlyClash SysProxy - Windows 系统代理管理工具
+	fmt.Println(`Liberbox SysProxy - Windows 系统代理管理工具
 
 用法:
   sysproxy global <host:port> [bypass]  设置全局代理

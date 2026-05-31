@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * Auto-updater module
@@ -6,12 +6,12 @@
  */
 
 const RELEASE_API_ENDPOINTS = [
-  'https://api.github.com/repos/GtxFury/FlyClash/releases/latest',
-  'https://mirror.ghproxy.com/https://api.github.com/repos/GtxFury/FlyClash/releases/latest',
-  'https://gh.api.99988866.xyz/https://api.github.com/repos/GtxFury/FlyClash/releases/latest'
+  "https://api.github.com/repos/uyo8os/Liberbox/releases/latest",
+  "https://mirror.ghproxy.com/https://api.github.com/repos/uyo8os/Liberbox/releases/latest",
+  "https://gh.api.99988866.xyz/https://api.github.com/repos/uyo8os/Liberbox/releases/latest",
 ];
 
-const AUTO_UPDATE_IPC_CHANNEL = 'auto-update-available';
+const AUTO_UPDATE_IPC_CHANNEL = "auto-update-available";
 
 let cachedFetchFn = null;
 
@@ -20,26 +20,30 @@ async function resolveFetchFn() {
     return cachedFetchFn;
   }
 
-  if (typeof globalThis.fetch === 'function') {
+  if (typeof globalThis.fetch === "function") {
     cachedFetchFn = globalThis.fetch.bind(globalThis);
     return cachedFetchFn;
   }
 
-  const { default: fetchFn } = await import('node-fetch');
+  const { default: fetchFn } = await import("node-fetch");
   cachedFetchFn = fetchFn;
   return cachedFetchFn;
 }
 
 function normalizeVersionString(value) {
-  if (!value) return '0.0.0';
-  const cleaned = String(value).trim().replace(/^v/i, '');
+  if (!value) return "0.0.0";
+  const cleaned = String(value).trim().replace(/^v/i, "");
   const main = cleaned.split(/[-+]/)[0];
-  return main || '0.0.0';
+  return main || "0.0.0";
 }
 
 function compareVersionsString(a, b) {
-  const aParts = normalizeVersionString(a).split('.').map((part) => Number.parseInt(part, 10) || 0);
-  const bParts = normalizeVersionString(b).split('.').map((part) => Number.parseInt(part, 10) || 0);
+  const aParts = normalizeVersionString(a)
+    .split(".")
+    .map((part) => Number.parseInt(part, 10) || 0);
+  const bParts = normalizeVersionString(b)
+    .split(".")
+    .map((part) => Number.parseInt(part, 10) || 0);
   const length = Math.max(aParts.length, bParts.length);
 
   for (let i = 0; i < length; i += 1) {
@@ -60,8 +64,8 @@ async function fetchLatestReleaseInfo() {
     try {
       const response = await fetchFn(endpoint, {
         headers: {
-          Accept: 'application/vnd.github+json'
-        }
+          Accept: "application/vnd.github+json",
+        },
       });
 
       if (!response.ok) {
@@ -70,25 +74,31 @@ async function fetchLatestReleaseInfo() {
       }
 
       const data = await response.json();
-      const tagName = data?.tag_name || data?.name || '';
+      const tagName = data?.tag_name || data?.name || "";
 
       return {
         release: {
-          version: normalizeVersionString(tagName || data?.tag_name || data?.name),
-          displayVersion: tagName || data?.name || '',
-          body: data?.body || '',
-          url: data?.html_url || (tagName ? `https://github.com/GtxFury/FlyClash/releases/tag/${tagName}` : 'https://github.com/GtxFury/FlyClash/releases'),
-          name: data?.name || '',
-          publishedAt: data?.published_at || ''
+          version: normalizeVersionString(
+            tagName || data?.tag_name || data?.name,
+          ),
+          displayVersion: tagName || data?.name || "",
+          body: data?.body || "",
+          url:
+            data?.html_url ||
+            (tagName
+              ? `https://github.com/uyo8os/Liberbox/releases/tag/${tagName}`
+              : "https://github.com/uyo8os/Liberbox/releases"),
+          name: data?.name || "",
+          publishedAt: data?.published_at || "",
         },
-        source: endpoint
+        source: endpoint,
       };
     } catch (error) {
       errors.push(`${endpoint}: ${error?.message || error}`);
     }
   }
 
-  return { release: null, error: errors.join(' | ') || 'Unknown error' };
+  return { release: null, error: errors.join(" | ") || "Unknown error" };
 }
 
 /**
@@ -104,34 +114,38 @@ function createAutoUpdater({ app, state, dbManager, APP_VERSION }) {
 
   async function runStartupUpdateCheck() {
     try {
-      const autoCheckEnabled = dbManager.getSetting('autoCheckUpdate', true);
+      const autoCheckEnabled = dbManager.getSetting("autoCheckUpdate", true);
       if (!autoCheckEnabled) {
-        console.log('[AutoUpdate] 自动更新检查已禁用，跳过');
+        console.log("[AutoUpdate] 自动更新检查已禁用，跳过");
         return;
       }
 
       const { release, error } = await fetchLatestReleaseInfo();
       if (!release) {
         if (error) {
-          console.warn('[AutoUpdate] 获取版本信息失败:', error);
+          console.warn("[AutoUpdate] 获取版本信息失败:", error);
         }
         return;
       }
 
-      const currentVersion = typeof app.getVersion === 'function' ? app.getVersion() : APP_VERSION;
+      const currentVersion =
+        typeof app.getVersion === "function" ? app.getVersion() : APP_VERSION;
       if (compareVersionsString(release.version, currentVersion) > 0) {
-        if (state.mainWindow?.webContents && !state.mainWindow.webContents.isDestroyed()) {
+        if (
+          state.mainWindow?.webContents &&
+          !state.mainWindow.webContents.isDestroyed()
+        ) {
           state.mainWindow.webContents.send(AUTO_UPDATE_IPC_CHANNEL, {
             release,
-            currentVersion
+            currentVersion,
           });
-          console.log('[AutoUpdate] 检测到新版本，已通知渲染进程');
+          console.log("[AutoUpdate] 检测到新版本，已通知渲染进程");
         }
       } else {
-        console.log('[AutoUpdate] 当前已是最新版本');
+        console.log("[AutoUpdate] 当前已是最新版本");
       }
     } catch (error) {
-      console.error('[AutoUpdate] 启动检查失败:', error);
+      console.error("[AutoUpdate] 启动检查失败:", error);
     }
   }
 
@@ -144,7 +158,7 @@ function createAutoUpdater({ app, state, dbManager, APP_VERSION }) {
     };
 
     if (state.mainWindow?.webContents) {
-      state.mainWindow.webContents.once('did-finish-load', triggerCheck);
+      state.mainWindow.webContents.once("did-finish-load", triggerCheck);
     } else {
       setTimeout(() => scheduleStartupUpdateCheck(), 1000);
     }

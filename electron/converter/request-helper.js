@@ -1,16 +1,16 @@
 /**
  * 通用请求工具：支持自定义 UA/代理/跳过证书校验
  */
-const http = require('http');
-const https = require('https');
-const axios = require('axios');
-const ProxyAgent = require('proxy-agent');
+const http = require("http");
+const https = require("https");
+const axios = require("axios");
+const ProxyAgent = require("proxy-agent");
 
-const DEFAULT_UA = 'FlyClash-Converter/1.0';
+const DEFAULT_UA = "Liberbox-Converter/1.0";
 const DEFAULT_TIMEOUT = 30000;
 
 function buildAgent(url, settings = {}) {
-  const isHttps = url.startsWith('https');
+  const isHttps = url.startsWith("https");
   const insecure = settings.insecure === true;
   const proxy = settings.proxy;
 
@@ -34,23 +34,23 @@ function buildAgent(url, settings = {}) {
 function appendNoCacheParam(url) {
   try {
     const parsed = new URL(url);
-    parsed.searchParams.set('_t', Date.now().toString());
+    parsed.searchParams.set("_t", Date.now().toString());
     return parsed.toString();
   } catch {
-    const separator = url.includes('?') ? '&' : '?';
+    const separator = url.includes("?") ? "&" : "?";
     return `${url}${separator}_t=${Date.now()}`;
   }
 }
 
 async function fetchWithOptions(url, settings = {}, extraHeaders = {}) {
   const headers = {
-    'User-Agent': settings.userAgent || DEFAULT_UA,
-    ...extraHeaders
+    "User-Agent": settings.userAgent || DEFAULT_UA,
+    ...extraHeaders,
   };
 
   if (settings.noCache) {
-    headers['Cache-Control'] = 'no-cache';
-    headers['Pragma'] = 'no-cache';
+    headers["Cache-Control"] = "no-cache";
+    headers["Pragma"] = "no-cache";
   }
 
   const agent = buildAgent(url, settings);
@@ -61,7 +61,7 @@ async function fetchWithOptions(url, settings = {}, extraHeaders = {}) {
     headers,
     httpAgent: agent,
     httpsAgent: agent,
-    validateStatus: () => true
+    validateStatus: () => true,
   });
 
   if (response.status >= 200 && response.status < 300) {
@@ -74,5 +74,5 @@ async function fetchWithOptions(url, settings = {}, extraHeaders = {}) {
 module.exports = {
   fetchWithOptions,
   DEFAULT_UA,
-  DEFAULT_TIMEOUT
+  DEFAULT_TIMEOUT,
 };

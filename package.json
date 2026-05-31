@@ -1,10 +1,10 @@
 {
-  "name": "flyclash-ui",
+  "name": "liberbox-ui",
   "version": "0.2.7",
-  "description": "FlyClash Desktop",
+  "description": "Liberbox Desktop",
   "author": {
-    "name": "FlyClash",
-    "email": "flyclash@flyclash.com"
+    "name": "Liberbox",
+    "email": "contact@liberbox.app"
   },
   "private": true,
   "main": "electron/main.js",

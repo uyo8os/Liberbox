@@ -1,6 +1,6 @@
 /**
  * 服务 IPC 通信模块
- * 提供与 FlyClash Core Service 的通信接口
+ * 提供与 Liberbox Core Service 的通信接口
  */
 
 const net = require('net');

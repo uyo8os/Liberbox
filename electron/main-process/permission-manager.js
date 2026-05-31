@@ -1,8 +1,8 @@
-const { execSync } = require('child_process');
-const { app } = require('electron');
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
+const { execSync } = require("child_process");
+const { app } = require("electron");
+const fs = require("fs");
+const path = require("path");
+const os = require("os");
 
 function shellEscape(arg) {
   return "'" + arg.replace(/'/g, "'\\''") + "'";
@@ -10,11 +10,11 @@ function shellEscape(arg) {
 
 function escapeXml(str) {
   return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
 }
 
 /**
@@ -24,11 +24,11 @@ function escapeXml(str) {
 class PermissionManager {
   constructor() {
     // 任务名称
-    this.taskName = 'FlyClash-Elevated';
-    
+    this.taskName = "Liberbox-Elevated";
+
     // 任务目录 - 存储在用户数据目录
-    this.taskDir = path.join(app.getPath('userData'), 'task');
-    
+    this.taskDir = path.join(app.getPath("userData"), "task");
+
     // 确保任务目录存在
     this.ensureTaskDir();
   }
@@ -55,11 +55,11 @@ class PermissionManager {
   getElevateTaskXml() {
     const exePath = this.getExePath();
     const username = os.userInfo().username;
-    
+
     return `<?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
-    <Description>FlyClash Elevated Task</Description>
+    <Description>Liberbox Elevated Task</Description>
   </RegistrationInfo>
   <Triggers />
   <Principals>
@@ -107,27 +107,30 @@ class PermissionManager {
 
       // 写入 XML 文件（必须是 UTF-16LE 带 BOM）
       // \ufeff 是 BOM 标记，schtasks.exe 需要它来正确识别编码
-      fs.writeFileSync(xmlPath, Buffer.from(`\ufeff${xml}`, 'utf16le'));
+      fs.writeFileSync(xmlPath, Buffer.from(`\ufeff${xml}`, "utf16le"));
 
-      console.log('[PermissionManager] XML written to:', xmlPath);
-      console.log('[PermissionManager] ExePath:', this.getExePath());
+      console.log("[PermissionManager] XML written to:", xmlPath);
+      console.log("[PermissionManager] ExePath:", this.getExePath());
 
       // 创建计划任务
       const cmd = `%SystemRoot%\\System32\\schtasks.exe /create /tn "${this.taskName}" /xml "${xmlPath}" /f`;
-      console.log('[PermissionManager] Executing:', cmd);
+      console.log("[PermissionManager] Executing:", cmd);
 
-      const result = execSync(cmd, { stdio: 'pipe', encoding: 'utf8' });
-      console.log('[PermissionManager] schtasks output:', result);
+      const result = execSync(cmd, { stdio: "pipe", encoding: "utf8" });
+      console.log("[PermissionManager] schtasks output:", result);
 
-      console.log('[PermissionManager] Elevated task created:', this.taskName);
+      console.log("[PermissionManager] Elevated task created:", this.taskName);
       return true;
     } catch (error) {
-      console.error('[PermissionManager] Failed to create elevated task:', error.message);
+      console.error(
+        "[PermissionManager] Failed to create elevated task:",
+        error.message,
+      );
       if (error.stderr) {
-        console.error('[PermissionManager] stderr:', error.stderr.toString());
+        console.error("[PermissionManager] stderr:", error.stderr.toString());
       }
       if (error.stdout) {
-        console.error('[PermissionManager] stdout:', error.stdout.toString());
+        console.error("[PermissionManager] stdout:", error.stdout.toString());
       }
       throw error;
     }
@@ -147,7 +150,7 @@ class PermissionManager {
     try {
       const result = execSync(
         `%SystemRoot%\\System32\\schtasks.exe /query /tn "${this.taskName}"`,
-        { stdio: 'pipe', encoding: 'utf8' }
+        { stdio: "pipe", encoding: "utf8" },
       );
       return result.includes(this.taskName);
     } catch {
@@ -169,11 +172,14 @@ class PermissionManager {
     try {
       execSync(
         `%SystemRoot%\\System32\\schtasks.exe /delete /tn "${this.taskName}" /f`,
-        { stdio: 'pipe' }
+        { stdio: "pipe" },
       );
-      console.log('[PermissionManager] Elevated task deleted:', this.taskName);
+      console.log("[PermissionManager] Elevated task deleted:", this.taskName);
     } catch (error) {
-      console.error('[PermissionManager] Failed to delete elevated task:', error.message);
+      console.error(
+        "[PermissionManager] Failed to delete elevated task:",
+        error.message,
+      );
       throw error;
     }
   }
@@ -182,7 +188,7 @@ class PermissionManager {
    * 检查当前进程是否有管理员权限
    */
   checkAdminPrivilegesSync() {
-    if (process.platform !== 'win32') {
+    if (process.platform !== "win32") {
       // 非 Windows 平台由其他逻辑决定权限
       return false;
     }
@@ -191,22 +197,25 @@ class PermissionManager {
     try {
       const output = execSync(
         'powershell -NoProfile -NonInteractive -Command "[Security.Principal.WindowsPrincipal]::new([Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)"',
-        { stdio: ['ignore', 'pipe', 'ignore'] }
+        { stdio: ["ignore", "pipe", "ignore"] },
       )
         .toString()
         .trim()
         .toLowerCase();
 
-      if (output === 'true') {
+      if (output === "true") {
         return true;
       }
     } catch (e) {
       // PowerShell 失败时回退到 net session 检测
-      console.warn('[PermissionManager] PowerShell admin check failed, fallback to net session:', e.message);
+      console.warn(
+        "[PermissionManager] PowerShell admin check failed, fallback to net session:",
+        e.message,
+      );
     }
 
     try {
-      execSync('net session', { stdio: 'ignore' });
+      execSync("net session", { stdio: "ignore" });
       return true;
     } catch {
       return false;
@@ -227,27 +236,35 @@ class PermissionManager {
     try {
       // 检查任务是否存在
       if (!this.checkElevateTaskSync()) {
-        throw new Error('Elevated task does not exist. Please create it first.');
+        throw new Error(
+          "Elevated task does not exist. Please create it first.",
+        );
       }
 
       // 运行计划任务
       execSync(
         `%SystemRoot%\\System32\\schtasks.exe /run /tn "${this.taskName}"`,
-        { stdio: 'pipe' }
+        { stdio: "pipe" },
       );
 
-      console.log('[PermissionManager] Running as admin via task:', this.taskName);
-      console.log('[PermissionManager] Waiting for new instance to start...');
+      console.log(
+        "[PermissionManager] Running as admin via task:",
+        this.taskName,
+      );
+      console.log("[PermissionManager] Waiting for new instance to start...");
 
       // 等待新实例启动后再退出当前进程
       // 延迟 2 秒，给计划任务足够的时间启动新实例
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      console.log('[PermissionManager] Quitting current instance...');
+      console.log("[PermissionManager] Quitting current instance...");
       // 退出当前进程
       app.quit();
     } catch (error) {
-      console.error('[PermissionManager] Failed to run as admin:', error.message);
+      console.error(
+        "[PermissionManager] Failed to run as admin:",
+        error.message,
+      );
       throw error;
     }
   }
@@ -256,13 +273,13 @@ class PermissionManager {
    * 授予核心文件权限（macOS/Linux）
    */
   async grantCorePermission() {
-    if (process.platform === 'win32') {
+    if (process.platform === "win32") {
       // Windows 平台不需要此操作
       return;
     }
 
-    const { promisify } = require('util');
-    const { exec, execFile } = require('child_process');
+    const { promisify } = require("util");
+    const { exec, execFile } = require("child_process");
     const execPromise = promisify(exec);
     const execFilePromise = promisify(execFile);
 
@@ -270,25 +287,37 @@ class PermissionManager {
     const corePath = this.getCorePath();
 
     try {
-      if (process.platform === 'darwin') {
+      if (process.platform === "darwin") {
         const escaped = shellEscape(corePath);
         const script = `do shell script "chown root:admin ${escaped} && chmod +sx ${escaped}" with administrator privileges`;
-        await execFilePromise('osascript', ['-e', script]);
-      } else if (process.platform === 'linux') {
+        await execFilePromise("osascript", ["-e", script]);
+      } else if (process.platform === "linux") {
         // 优先尝试为内核设置能力, 失败则回退到 setuid root
         try {
-          await execFilePromise('pkexec', ['setcap', 'cap_net_admin,cap_net_bind_service=+eip', corePath]);
-          console.log('[PermissionManager] Linux capabilities granted via setcap');
+          await execFilePromise("pkexec", [
+            "setcap",
+            "cap_net_admin,cap_net_bind_service=+eip",
+            corePath,
+          ]);
+          console.log(
+            "[PermissionManager] Linux capabilities granted via setcap",
+          );
         } catch (capError) {
-          console.warn('[PermissionManager] setcap failed, falling back to setuid root:', capError?.message || capError);
-          await execFilePromise('pkexec', ['chown', 'root:root', corePath]);
-          await execFilePromise('pkexec', ['chmod', '+sx', corePath]);
-          console.log('[PermissionManager] Linux setuid root applied');
+          console.warn(
+            "[PermissionManager] setcap failed, falling back to setuid root:",
+            capError?.message || capError,
+          );
+          await execFilePromise("pkexec", ["chown", "root:root", corePath]);
+          await execFilePromise("pkexec", ["chmod", "+sx", corePath]);
+          console.log("[PermissionManager] Linux setuid root applied");
         }
       }
-      console.log('[PermissionManager] Core permission granted');
+      console.log("[PermissionManager] Core permission granted");
     } catch (error) {
-      console.error('[PermissionManager] Failed to grant core permission:', error);
+      console.error(
+        "[PermissionManager] Failed to grant core permission:",
+        error,
+      );
       throw error;
     }
   }
@@ -297,34 +326,39 @@ class PermissionManager {
    * 检查核心文件权限（macOS/Linux）
    */
   async checkCorePermission() {
-    if (process.platform === 'win32') {
+    if (process.platform === "win32") {
       // Windows 平台检查管理员权限
       return await this.checkAdminPrivileges();
     }
 
-    const { promisify } = require('util');
-    const { exec } = require('child_process');
+    const { promisify } = require("util");
+    const { exec } = require("child_process");
     const execPromise = promisify(exec);
     const corePath = this.getCorePath();
 
     try {
-      if (process.platform === 'darwin') {
+      if (process.platform === "darwin") {
         const { stdout } = await execPromise(`ls -l "${corePath}"`);
         const permissions = stdout.trim().split(/\s+/)[0];
-        return permissions.includes('s') || permissions.includes('S');
+        return permissions.includes("s") || permissions.includes("S");
       }
       // Linux: 先检查 capabilities, 再检查 setuid
       try {
-        const { stdout: capOut } = await execPromise(`getcap "${corePath}" || true`);
+        const { stdout: capOut } = await execPromise(
+          `getcap "${corePath}" || true`,
+        );
         if (capOut && /cap_net_admin/i.test(capOut)) {
           return true;
         }
       } catch {}
       const { stdout } = await execPromise(`ls -l "${corePath}"`);
       const permissions = stdout.trim().split(/\s+/)[0];
-      return permissions.includes('s') || permissions.includes('S');
+      return permissions.includes("s") || permissions.includes("S");
     } catch (error) {
-      console.error('[PermissionManager] Failed to check core permission:', error);
+      console.error(
+        "[PermissionManager] Failed to check core permission:",
+        error,
+      );
       return false;
     }
   }
@@ -333,32 +367,35 @@ class PermissionManager {
    * 撤销核心文件权限（macOS/Linux）
    */
   async revokeCorePermission() {
-    if (process.platform === 'win32') {
+    if (process.platform === "win32") {
       // Windows 平台不需要此操作
       return;
     }
 
-    const { promisify } = require('util');
-    const { exec, execFile } = require('child_process');
+    const { promisify } = require("util");
+    const { exec, execFile } = require("child_process");
     const execPromise = promisify(exec);
     const execFilePromise = promisify(execFile);
     const corePath = this.getCorePath();
 
     try {
-      if (process.platform === 'darwin') {
+      if (process.platform === "darwin") {
         const escaped = shellEscape(corePath);
         const script = `do shell script "chmod a-s ${escaped}" with administrator privileges`;
-        await execFilePromise('osascript', ['-e', script]);
-      } else if (process.platform === 'linux') {
+        await execFilePromise("osascript", ["-e", script]);
+      } else if (process.platform === "linux") {
         try {
-          await execFilePromise('pkexec', ['setcap', '-r', corePath]);
+          await execFilePromise("pkexec", ["setcap", "-r", corePath]);
         } catch {
-          await execFilePromise('pkexec', ['chmod', 'a-s', corePath]);
+          await execFilePromise("pkexec", ["chmod", "a-s", corePath]);
         }
       }
-      console.log('[PermissionManager] Core permission revoked');
+      console.log("[PermissionManager] Core permission revoked");
     } catch (error) {
-      console.error('[PermissionManager] Failed to revoke core permission:', error);
+      console.error(
+        "[PermissionManager] Failed to revoke core permission:",
+        error,
+      );
       throw error;
     }
   }
@@ -367,16 +404,18 @@ class PermissionManager {
    * 获取核心文件路径
    */
   getCorePath() {
-    const isWin = process.platform === 'win32';
-    const isMac = process.platform === 'darwin';
-    const isLinux = process.platform === 'linux';
+    const isWin = process.platform === "win32";
+    const isMac = process.platform === "darwin";
+    const isLinux = process.platform === "linux";
 
     // 0) 优先读取用户设置的自定义内核路径
     try {
-      const prefPath = path.join(app.getPath('userData'), 'kernel-config.json');
+      const prefPath = path.join(app.getPath("userData"), "kernel-config.json");
       if (fs.existsSync(prefPath)) {
-        const pref = JSON.parse(fs.readFileSync(prefPath, 'utf8')) || {};
-        const customPath = pref?.customPath ? String(pref.customPath).trim() : '';
+        const pref = JSON.parse(fs.readFileSync(prefPath, "utf8")) || {};
+        const customPath = pref?.customPath
+          ? String(pref.customPath).trim()
+          : "";
         if (customPath && fs.existsSync(customPath)) {
           return customPath;
         }
@@ -385,27 +424,41 @@ class PermissionManager {
 
     // 搜索 cores 目录（与运行时启动一致）
     const roots = [
-      path.join(process.resourcesPath || '', 'cores'),
-      path.join(app.getAppPath(), 'cores'),
-      path.join(process.cwd(), 'cores')
+      path.join(process.resourcesPath || "", "cores"),
+      path.join(app.getAppPath(), "cores"),
+      path.join(process.cwd(), "cores"),
     ];
 
     for (const root of roots) {
       try {
         if (!fs.existsSync(root)) continue;
         const files = fs.readdirSync(root);
-        let candidates = files.filter((file) => file.toLowerCase().includes('mihomo'));
-        if (isWin) candidates = candidates.filter((f) => f.endsWith('.exe'));
-        if (isMac) candidates = candidates.filter((f) => f.toLowerCase().includes('darwin'));
-        if (isLinux) candidates = candidates.filter((f) => f.toLowerCase().includes('linux'));
+        let candidates = files.filter((file) =>
+          file.toLowerCase().includes("mihomo"),
+        );
+        if (isWin) candidates = candidates.filter((f) => f.endsWith(".exe"));
+        if (isMac)
+          candidates = candidates.filter((f) =>
+            f.toLowerCase().includes("darwin"),
+          );
+        if (isLinux)
+          candidates = candidates.filter((f) =>
+            f.toLowerCase().includes("linux"),
+          );
 
         // 尝试匹配架构
         const arch = process.arch;
         const archFiltered = candidates.filter((file) => {
           const lower = file.toLowerCase();
-          if (arch === 'x64' || arch === 'amd64') return lower.includes('amd64') || lower.includes('x64');
-          if (arch === 'arm64') return lower.includes('arm64');
-          if (arch === 'ia32' || arch === 'x86') return lower.includes('386') || lower.includes('ia32') || lower.includes('x86');
+          if (arch === "x64" || arch === "amd64")
+            return lower.includes("amd64") || lower.includes("x64");
+          if (arch === "arm64") return lower.includes("arm64");
+          if (arch === "ia32" || arch === "x86")
+            return (
+              lower.includes("386") ||
+              lower.includes("ia32") ||
+              lower.includes("x86")
+            );
           return true;
         });
 
@@ -417,11 +470,11 @@ class PermissionManager {
     }
 
     // 回退到通用路径（可能在 dev extra/sidecar）
-    const genericName = isWin ? 'mihomo.exe' : 'mihomo';
+    const genericName = isWin ? "mihomo.exe" : "mihomo";
     const fallbacks = [
-      path.join(process.resourcesPath || '', 'extra', 'sidecar', genericName),
-      path.join(app.getAppPath(), '..', 'extra', 'sidecar', genericName),
-      path.join(process.resourcesPath || '', genericName)
+      path.join(process.resourcesPath || "", "extra", "sidecar", genericName),
+      path.join(app.getAppPath(), "..", "extra", "sidecar", genericName),
+      path.join(process.resourcesPath || "", genericName),
     ];
     for (const p of fallbacks) {
       if (fs.existsSync(p)) return p;
@@ -429,13 +482,21 @@ class PermissionManager {
 
     // 最后回退: 优先尝试历史的 cores 目录；仅当路径存在时返回
     try {
-      const legacyCores = path.join(process.resourcesPath || path.join(app.getAppPath(), '..'), 'cores', genericName);
+      const legacyCores = path.join(
+        process.resourcesPath || path.join(app.getAppPath(), ".."),
+        "cores",
+        genericName,
+      );
       if (fs.existsSync(legacyCores)) return legacyCores;
-      const legacyCore = path.join(process.resourcesPath || path.join(app.getAppPath(), '..'), 'core', genericName);
+      const legacyCore = path.join(
+        process.resourcesPath || path.join(app.getAppPath(), ".."),
+        "core",
+        genericName,
+      );
       if (fs.existsSync(legacyCore)) return legacyCore;
     } catch {}
     // 未找到有效路径
-    return '';
+    return "";
   }
 }
 
