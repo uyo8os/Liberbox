@@ -104,6 +104,14 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+      - name: Extract version number
+        id: version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          $version = "${{ github.ref_name }}" -replace '^v', ''
+          echo "version=$version" >> $env:GITHUB_OUTPUT
+        shell: pwsh
+
       - name: Publish Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
@@ -118,13 +126,13 @@ jobs:
             
             ### Windows 10/11:
             
-            [![64-bit EXE](https://img.shields.io/badge/64--bit-EXE-0078D4?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ github.ref_name }}-x64-setup.exe)
-            [![64-bit 7Z](https://img.shields.io/badge/64--bit-7Z-0078D4?style=for-the-badge&logo=7zip&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ github.ref_name }}-x64.7z)
+            [![64-bit EXE](https://img.shields.io/badge/64--bit-EXE-0078D4?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ steps.version.outputs.version }}-x64-setup.exe)
+            [![64-bit 7Z](https://img.shields.io/badge/64--bit-7Z-0078D4?style=for-the-badge&logo=7zip&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ steps.version.outputs.version }}-x64.7z)
             
             ### macOS 11+:
             
-            [![Intel DMG](https://img.shields.io/badge/Intel-DMG-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ github.ref_name }}-x64.dmg)
-            [![Apple Silicon DMG](https://img.shields.io/badge/Apple_Silicon-DMG-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ github.ref_name }}-arm64.dmg)
+            [![Intel DMG](https://img.shields.io/badge/Intel-DMG-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ steps.version.outputs.version }}-x64.dmg)
+            [![Apple Silicon DMG](https://img.shields.io/badge/Apple_Silicon-DMG-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ steps.version.outputs.version }}-arm64.dmg)
             
             ---
             
@@ -211,6 +219,14 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+      - name: Extract version number
+        id: version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          version="${{ github.ref_name }}"
+          version="${version#v}"
+          echo "version=$version" >> $GITHUB_OUTPUT
+
       - name: Publish Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
@@ -225,13 +241,13 @@ jobs:
             
             ### Windows 10/11:
             
-            [![64-bit EXE](https://img.shields.io/badge/64--bit-EXE-0078D4?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ github.ref_name }}-x64-setup.exe)
-            [![64-bit 7Z](https://img.shields.io/badge/64--bit-7Z-0078D4?style=for-the-badge&logo=7zip&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ github.ref_name }}-x64.7z)
+            [![64-bit EXE](https://img.shields.io/badge/64--bit-EXE-0078D4?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ steps.version.outputs.version }}-x64-setup.exe)
+            [![64-bit 7Z](https://img.shields.io/badge/64--bit-7Z-0078D4?style=for-the-badge&logo=7zip&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ steps.version.outputs.version }}-x64.7z)
             
             ### macOS 11+:
             
-            [![Intel DMG](https://img.shields.io/badge/Intel-DMG-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ github.ref_name }}-x64.dmg)
-            [![Apple Silicon DMG](https://img.shields.io/badge/Apple_Silicon-DMG-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ github.ref_name }}-arm64.dmg)
+            [![Intel DMG](https://img.shields.io/badge/Intel-DMG-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ steps.version.outputs.version }}-x64.dmg)
+            [![Apple Silicon DMG](https://img.shields.io/badge/Apple_Silicon-DMG-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ steps.version.outputs.version }}-arm64.dmg)
             
             ---
             

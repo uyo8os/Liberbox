@@ -22,12 +22,13 @@ const repoUrl = process.env.GITHUB_SERVER_URL && process.env.GITHUB_REPOSITORY
 const templatePath = path.join(__dirname, '..', '.github', 'release-template.md');
 let template = fs.readFileSync(templatePath, 'utf-8');
 
-// 构建下载链接
+// 构建下载链接（注意：文件名不包含 v 前缀）
+const versionWithoutV = version.replace(/^v/, '');
 const releaseUrl = `${repoUrl}/releases/download/${version}`;
-const windowsX64Setup = `${releaseUrl}/Liberbox-${version}-x64-setup.exe`;
-const windowsX647z = `${releaseUrl}/Liberbox-${version}-x64.7z`;
-const macosX64Dmg = `${releaseUrl}/Liberbox-${version}-x64.dmg`;
-const macosArm64Dmg = `${releaseUrl}/Liberbox-${version}-arm64.dmg`;
+const windowsX64Setup = `${releaseUrl}/Liberbox-${versionWithoutV}-x64-setup.exe`;
+const windowsX647z = `${releaseUrl}/Liberbox-${versionWithoutV}-x64.7z`;
+const macosX64Dmg = `${releaseUrl}/Liberbox-${versionWithoutV}-x64.dmg`;
+const macosArm64Dmg = `${releaseUrl}/Liberbox-${versionWithoutV}-arm64.dmg`;
 
 // 获取上一个版本（用于生成 changelog 对比链接）
 const getPreviousVersion = () => {
