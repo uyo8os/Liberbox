@@ -111,6 +111,38 @@ jobs:
           files: |
             dist/*-setup.exe
             dist/*.7z
+          body: |
+            # 🎉 Liberbox ${{ github.ref_name }}
+            
+            ## 📦 Download link:
+            
+            ### Windows 10/11:
+            
+            [![64-bit EXE](https://img.shields.io/badge/64--bit-EXE-0078D4?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ github.ref_name }}-x64-setup.exe)
+            [![64-bit 7Z](https://img.shields.io/badge/64--bit-7Z-0078D4?style=for-the-badge&logo=7zip&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ github.ref_name }}-x64.7z)
+            
+            ### macOS 11+:
+            
+            [![Intel DMG](https://img.shields.io/badge/Intel-DMG-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ github.ref_name }}-x64.dmg)
+            [![Apple Silicon DMG](https://img.shields.io/badge/Apple_Silicon-DMG-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ github.ref_name }}-arm64.dmg)
+            
+            ---
+            
+            ## 🔧 Installation
+            
+            ### Windows
+            1. Download the `.exe` installer
+            2. Run the installer and follow the setup wizard
+            3. Launch Liberbox from the Start Menu
+            
+            ### macOS
+            1. Download the `.dmg` file for your architecture
+            2. Open the DMG and drag Liberbox to Applications
+            3. Launch Liberbox from Applications folder
+            
+            ---
+            
+            **Full Changelog**: https://github.com/${{ github.repository }}/compare/v0.0.0...${{ github.ref_name }}
           fail_on_unmatched_files: false
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -186,6 +218,38 @@ jobs:
           files: |
             dist/*.dmg
             dist/*.zip
+          body: |
+            # 🎉 Liberbox ${{ github.ref_name }}
+            
+            ## 📦 Download link:
+            
+            ### Windows 10/11:
+            
+            [![64-bit EXE](https://img.shields.io/badge/64--bit-EXE-0078D4?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ github.ref_name }}-x64-setup.exe)
+            [![64-bit 7Z](https://img.shields.io/badge/64--bit-7Z-0078D4?style=for-the-badge&logo=7zip&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ github.ref_name }}-x64.7z)
+            
+            ### macOS 11+:
+            
+            [![Intel DMG](https://img.shields.io/badge/Intel-DMG-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ github.ref_name }}-x64.dmg)
+            [![Apple Silicon DMG](https://img.shields.io/badge/Apple_Silicon-DMG-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/Liberbox-${{ github.ref_name }}-arm64.dmg)
+            
+            ---
+            
+            ## 🔧 Installation
+            
+            ### Windows
+            1. Download the `.exe` installer
+            2. Run the installer and follow the setup wizard
+            3. Launch Liberbox from the Start Menu
+            
+            ### macOS
+            1. Download the `.dmg` file for your architecture
+            2. Open the DMG and drag Liberbox to Applications
+            3. Launch Liberbox from Applications folder
+            
+            ---
+            
+            **Full Changelog**: https://github.com/${{ github.repository }}/compare/v0.0.0...${{ github.ref_name }}
           fail_on_unmatched_files: false
           token: ${{ secrets.GITHUB_TOKEN }}
 
